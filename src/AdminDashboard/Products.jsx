@@ -1,16 +1,9 @@
-import React, {
-  useEffect,
-  useState,
-  useRef,
-  useCallback,
-  useMemo,
-} from "react";
+import React, { useEffect, useState, useRef, useCallback, useMemo } from "react";
 import { useNavigate } from "react-router-dom";
 import NavBar from "./NavBar";
 import Leftsidebar from "./Leftsidebar";
 import { image } from "../images";
 
-// Separate components for better organization
 const ProductDropdown = ({
   isOpen,
   onEdit,
@@ -60,7 +53,6 @@ const ProductModal = ({ isOpen, product, onClose, onSave, isEditing }) => {
     imageName: "",
   });
 
-  // Get data from localStorage with error handling
   const getBrands = useCallback(() => {
     try {
       return JSON.parse(localStorage.getItem("brand") || "[]");
@@ -94,7 +86,6 @@ const ProductModal = ({ isOpen, product, onClose, onSave, isEditing }) => {
 
   const modalRef = useRef(null);
 
-  // Initialize form data when modal opens or product changes
   useEffect(() => {
     if (isOpen) {
       setFormData({
@@ -111,7 +102,6 @@ const ProductModal = ({ isOpen, product, onClose, onSave, isEditing }) => {
     }
   }, [isOpen, product]);
 
-  // Close modal when clicking outside
   useEffect(() => {
     const handleClickOutside = (event) => {
       if (modalRef.current && !modalRef.current.contains(event.target)) {
@@ -128,14 +118,11 @@ const ProductModal = ({ isOpen, product, onClose, onSave, isEditing }) => {
     };
   }, [isOpen, onClose]);
 
-  // Handle input changes
   const handleInputChange = (e) => {
     const { name, value } = e.target;
-
-    // Format text inputs with capitalized words
     const formattedValue =
       name === "price"
-        ? value.replace(/[^0-9.]/g, "") // Only allow numbers and decimal point for price
+        ? value.replace(/[^0-9.]/g, "")
         : value
             .split(" ")
             .map((word) => word.charAt(0).toUpperCase() + word.slice(1))
@@ -143,13 +130,11 @@ const ProductModal = ({ isOpen, product, onClose, onSave, isEditing }) => {
 
     let updatedProduct = { ...formData, [name]: formattedValue };
 
-    // Reset dependent fields when brand changes
     if (name === "brandname") {
       updatedProduct.partnersname = "";
       updatedProduct.collectionname = "";
     }
 
-    // Reset collection when partner changes
     if (name === "partnersname") {
       updatedProduct.collectionname = "";
     }
@@ -157,12 +142,9 @@ const ProductModal = ({ isOpen, product, onClose, onSave, isEditing }) => {
     setFormData(updatedProduct);
   };
 
-  // Handle image upload
   const handleImageUpload = (e) => {
     const file = e.target.files[0];
     if (!file) return;
-
-    // Validate image type and size
     const validTypes = ["image/png", "image/jpeg", "image/jpg"];
     if (!validTypes.includes(file.type)) {
       alert("Please upload a valid image (PNG, JPEG, JPG)");
@@ -170,7 +152,6 @@ const ProductModal = ({ isOpen, product, onClose, onSave, isEditing }) => {
     }
 
     if (file.size > 2 * 1024 * 1024) {
-      // 2MB limit
       alert("Image size should be less than 2MB");
       return;
     }
@@ -186,16 +167,13 @@ const ProductModal = ({ isOpen, product, onClose, onSave, isEditing }) => {
     reader.readAsDataURL(file);
   };
 
-  // Clear selected image
   const clearSelectedImage = () => {
     setFormData({ ...formData, image: "", imageName: "" });
   };
 
-  // Handle form submission
   const handleSubmit = (e) => {
     e.preventDefault();
 
-    // Validate required fields
     if (
       !formData.name.trim() ||
       !formData.brandname ||
@@ -206,23 +184,19 @@ const ProductModal = ({ isOpen, product, onClose, onSave, isEditing }) => {
       return;
     }
 
-    // Validate price format
     if (isNaN(parseFloat(formData.price))) {
       alert("Please enter a valid price");
       return;
     }
-
     onSave(formData);
   };
 
-  // Filter partners based on selected brand
   const filteredPartners = useMemo(() => {
     return partners.filter(
       (partner) => partner.brandname === formData.brandname
     );
   }, [partners, formData.brandname]);
 
-  // Filter collections based on selected brand and partner
   const filteredCollections = useMemo(() => {
     return collections.filter(
       (collection) =>
@@ -542,16 +516,21 @@ const EmptyState = ({ onAddProduct }) => (
 );
 
 const Products = () => {
-  // Navigation hook
   const navigate = useNavigate();
+  const [cart, setCart] = useState(() => {
+    try {
+      const savedCart = localStorage.getItem("cart");
+      return savedCart ? JSON.parse(savedCart) : [];
+    } catch (error) {
+      console.error("Error parsing cart data:", error);
+      localStorage.removeItem("cart");
+      return [];
+    }
+  });
 
-  // Responsive state management
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
   const [isMobile, setIsMobile] = useState(false);
-
-  // State management with localStorage
   const [products, setProducts] = useState([]);
-  const [cart, setCart] = useState([]);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [activeDropdownIndex, setActiveDropdownIndex] = useState(null);
   const [currentProduct, setCurrentProduct] = useState(null);
@@ -560,27 +539,26 @@ const Products = () => {
   const [searchTerm, setSearchTerm] = useState("");
   const [sortConfig] = useState({ key: null, direction: "ascending" });
 
-  // Refs
   const dropdownRef = useRef(null);
   const containerRef = useRef(null);
 
-  // Handle responsive behavior
+  useEffect(() => {
+    try {
+      localStorage.setItem("cart", JSON.stringify(cart));
+    } catch (error) {
+      console.error("Error saving cart to localStorage:", error);
+    }
+  }, [cart]);
+
   useEffect(() => {
     const checkScreenSize = () => {
       setIsMobile(window.innerWidth < 1024);
-      // Auto-close sidebar on mobile when screen size changes
       if (window.innerWidth < 1024) {
         setIsSidebarOpen(false);
       }
     };
-
-    // Check initial screen size
     checkScreenSize();
-
-    // Add event listener for window resize
     window.addEventListener("resize", checkScreenSize);
-
-    // Cleanup
     return () => window.removeEventListener("resize", checkScreenSize);
   }, []);
 
@@ -592,11 +570,9 @@ const Products = () => {
     setIsSidebarOpen(false);
   };
 
-  // Function to update localStorage with timestamp for dashboard sync
   const updateProductsInStorage = useCallback((newProducts) => {
     try {
       localStorage.setItem("products", JSON.stringify(newProducts));
-      // Set timestamp for dashboard to detect changes
       localStorage.setItem("adminProductsUpdated", Date.now().toString());
       localStorage.setItem("productsLastUpdated", Date.now().toString());
     } catch (error) {
@@ -604,7 +580,6 @@ const Products = () => {
     }
   }, []);
 
-  // Load products from localStorage on component mount
   useEffect(() => {
     try {
       const storedProducts = localStorage.getItem("products");
@@ -618,38 +593,12 @@ const Products = () => {
     }
   }, []);
 
-  // Save products to localStorage whenever products state changes
   useEffect(() => {
     if (products.length >= 0) {
-      // Allow for empty array
       updateProductsInStorage(products);
     }
   }, [products, updateProductsInStorage]);
 
-  // Load cart from localStorage on component mount
-  useEffect(() => {
-    try {
-      const storedCart = localStorage.getItem("cart");
-      if (storedCart) {
-        const parsedCart = JSON.parse(storedCart);
-        setCart(parsedCart);
-      }
-    } catch (error) {
-      console.error("Error loading cart from localStorage:", error);
-      setCart([]);
-    }
-  }, []);
-
-  // Save cart to localStorage whenever cart state changes
-  useEffect(() => {
-    try {
-      localStorage.setItem("cart", JSON.stringify(cart));
-    } catch (error) {
-      console.error("Error saving cart to localStorage:", error);
-    }
-  }, [cart]);
-
-  // Close dropdown when clicking outside
   useEffect(() => {
     const handleClickOutside = (event) => {
       if (dropdownRef.current && !dropdownRef.current.contains(event.target)) {
@@ -663,7 +612,6 @@ const Products = () => {
     };
   }, []);
 
-  // Modal handlers
   const openModal = useCallback((productToEdit = null, index = null) => {
     setCurrentProduct(productToEdit);
     setEditIndex(index);
@@ -677,17 +625,30 @@ const Products = () => {
     setEditIndex(null);
   }, []);
 
-  // Fixed navigation function
-  const viewProductDetails = (index) => {
-    const selectedProduct = filteredAndSortedProducts[index];
-    navigate("/product-detail", { state: selectedProduct });
+  const viewProductDetails = (product) => {
+    const productForDetail = {
+      id: `local_${product.id}`,
+      title: product.name || product.brandname,
+      price: parseFloat(product.price),
+      description: product.collectionname || product.partnersname || product.name || '',
+      category: product.brandname || 'local',
+      image: product.image,
+      rating: product.rating || { rate: 4.0, count: 0 },
+      brandname: product.brandname,
+      collectionname: product.collectionname,
+      partnersname: product.partnersname,
+      color: product.color,
+      size: product.size,
+      name: product.name,
+      isLocalProduct: true,
+    };
+    
+    navigate("/product-detail", { state: productForDetail });
   };
 
-  // Form submission handler
   const handleSubmit = useCallback(
     (formData) => {
       if (editIndex !== null) {
-        // Update existing product with animation
         setAnimation({ index: editIndex, type: "update" });
 
         setTimeout(() => {
@@ -703,14 +664,23 @@ const Products = () => {
           }, 600);
         }, 300);
       } else {
-        // Add new product
         const newId =
           products.length > 0
             ? Math.max(...products.map((p) => p.id || 0)) + 1
             : 1;
 
+        const newProduct = {
+          ...formData,
+          id: newId,
+          isLocalProduct: true,
+          rating: {
+            rate: 4.0,
+            count: 0,
+          },
+        };
+
         setProducts((prev) => {
-          const newProducts = [...prev, { ...formData, id: newId }];
+          const newProducts = [...prev, newProduct];
           return newProducts;
         });
       }
@@ -720,7 +690,6 @@ const Products = () => {
     [editIndex, products, closeModal]
   );
 
-  // Delete product with animation
   const deleteProduct = useCallback((index) => {
     setAnimation({ index, type: "delete" });
 
@@ -733,15 +702,27 @@ const Products = () => {
     }, 500);
   }, []);
 
-  // Toggle dropdown with improved event handling
   const toggleDropdown = useCallback((index, e) => {
     if (e) e.stopPropagation();
     setActiveDropdownIndex((prev) => (prev === index ? null : index));
   }, []);
 
-  // Apply sorting and filtering with memo for performance
+  const handleLogout = useCallback(() => {
+    try {
+      localStorage.removeItem("isAuthenticated");
+      localStorage.removeItem("adminLoggedIn");
+      localStorage.removeItem("userToken");
+      localStorage.removeItem("currentUser");
+      localStorage.removeItem("userSession");
+      
+      navigate("/login", { replace: true });
+    } catch (error) {
+      console.error("Error during logout:", error);
+      navigate("/login", { replace: true });
+    }
+  }, [navigate]);
+
   const filteredAndSortedProducts = useMemo(() => {
-    // First apply search filter
     let result = [...products];
 
     if (searchTerm.trim()) {
@@ -758,15 +739,12 @@ const Products = () => {
       );
     }
 
-    // Then apply sorting
     if (sortConfig.key) {
       result.sort((a, b) => {
-        // Handle null values
         if (!a[sortConfig.key] && !b[sortConfig.key]) return 0;
         if (!a[sortConfig.key]) return 1;
         if (!b[sortConfig.key]) return -1;
 
-        // Special handling for price (numeric sorting)
         if (sortConfig.key === "price") {
           const priceA = parseFloat(a[sortConfig.key]);
           const priceB = parseFloat(b[sortConfig.key]);
@@ -794,7 +772,9 @@ const Products = () => {
 
   return (
     <div className="min-h-screen bg-gray-100/10">
-      <NavBar />
+      <div className="flex flex-col sticky top-0 z-50">
+        <NavBar onLogout={handleLogout} />
+      </div>
 
       <div className="flex flex-col lg:flex-row gap-2 p-2 sm:p-3 lg:p-4">
         {/* Mobile Sidebar Toggle Button */}
@@ -828,6 +808,7 @@ const Products = () => {
             onClose={closeSidebar}
             isMobile={isMobile}
             isOpen={isSidebarOpen}
+            onLogout={handleLogout}
           />
         </div>
 
@@ -843,14 +824,12 @@ const Products = () => {
         {/* Main Content Area */}
         <div className="flex-1 w-full lg:w-auto min-w-0">
           <div className="bg-white rounded-xl lg:rounded-2xl shadow-md h-[calc(100vh-6rem)] flex flex-col">
-            {/* Header with Add Product button and search */}
             <div className="p-3 sm:p-4 lg:p-6 flex flex-col sm:flex-row justify-between items-center border-b border-gray-200 gap-4 flex-shrink-0">
               <h1 className="text-xl sm:text-2xl font-semibold text-gray-800">
                 Product Management
               </h1>
 
               <div className="flex flex-col sm:flex-row gap-3 sm:gap-4 w-full sm:w-auto">
-                {/* Search box */}
                 <div className="relative w-full sm:w-64">
                   <input
                     type="text"
@@ -895,8 +874,7 @@ const Products = () => {
                 {products.length === 0 ? (
                   <EmptyState onAddProduct={() => openModal()} />
                 ) : (
-                  // Enhanced responsive grid for products
-                  <div className="grid grid-cols-1 xs:grid-cols-2 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 2xl:grid-cols-6 gap-3 sm:gap-4 md:gap-6">
+                  <div className="grid grid-cols-1 xs:grid-cols-1 sm:grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-3 2xl:grid-cols-4 gap-3 sm:gap-4 md:gap-6">
                     {filteredAndSortedProducts.length > 0 ? (
                       filteredAndSortedProducts.map((item, index) => {
                         const originalIndex = products.findIndex(
@@ -938,8 +916,8 @@ const Products = () => {
 
                             {/* Product image - responsive heights */}
                             <div
-                              className="h-32 xs:h-36 sm:h-40 md:h-48 overflow-hidden rounded-lg cursor-pointer"
-                              onClick={() => viewProductDetails(index)}
+                              className="h-32 xs:h-45 sm:h-40 md:h-48 overflow-hidden rounded-lg cursor-pointer"
+                              onClick={() => viewProductDetails(item)}
                             >
                               <img
                                 src={item.image || "/api/placeholder/250/192"}
@@ -955,7 +933,7 @@ const Products = () => {
                                 <span
                                   className="text-sm sm:text-base md:text-lg font-bold cursor-pointer hover:text-blue-600 transition-colors truncate"
                                   title={item.brandname}
-                                  onClick={() => viewProductDetails(index)}
+                                  onClick={() => viewProductDetails(item)}
                                 >
                                   {item.brandname || item.title}
                                 </span>
@@ -1006,7 +984,7 @@ const Products = () => {
                               {/* Action button - responsive sizing */}
                               <button
                                 className="hover:bg-green-700 bg-green-600 text-white py-1.5 sm:py-2 px-3 sm:px-4 rounded-md transition-colors font-medium text-sm sm:text-base mt-1 sm:mt-0"
-                                onClick={() => viewProductDetails(index)}
+                                onClick={() => viewProductDetails(item)}
                               >
                                 View
                               </button>
@@ -1034,7 +1012,6 @@ const Products = () => {
             </div>
           </div>
 
-          {/* Product Modal */}
           <ProductModal
             isOpen={isModalOpen}
             product={currentProduct}
