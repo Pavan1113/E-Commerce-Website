@@ -91,10 +91,10 @@ const PartnerModal = ({ isOpen, partner, brands, onClose, onSave, isEditing }) =
   if (!isOpen) return null;
 
   return (
-    <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 animate-fade-in">
+    <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 animate-fade-in p-4">
       <div ref={modalRef} className="bg-white rounded-lg shadow-xl w-full max-w-md overflow-hidden animate-scale-in">
         <div className="p-4 flex justify-between items-center border-b border-gray-200">
-          <h2 className="text-xl font-semibold text-gray-800">
+          <h2 className="text-lg sm:text-xl font-semibold text-gray-800">
             {isEditing ? "Edit Partner" : "Add New Partner"}
           </h2>
           <button 
@@ -106,7 +106,7 @@ const PartnerModal = ({ isOpen, partner, brands, onClose, onSave, isEditing }) =
           </button>
         </div>
         
-        <form onSubmit={handleSubmit} className="p-6">
+        <form onSubmit={handleSubmit} className="p-4 sm:p-6">
           <div className="mb-4">
             <label htmlFor="brandSelect" className="block text-gray-700 font-medium mb-2">
               Brand Name <span className="text-red-500">*</span>
@@ -146,7 +146,7 @@ const PartnerModal = ({ isOpen, partner, brands, onClose, onSave, isEditing }) =
             />
           </div>
           
-          <div className="flex justify-end gap-3 mt-6">
+          <div className="flex flex-col sm:flex-row justify-end gap-3 mt-6">
             <button
               type="button"
               onClick={onClose}
@@ -173,19 +173,19 @@ const PartnerModal = ({ isOpen, partner, brands, onClose, onSave, isEditing }) =
 };
 
 const EmptyState = ({ onAddPartner }) => (
-  <div className="text-center py-12">
+  <div className="text-center py-8 sm:py-12">
     <div className="mb-4">
       <img 
         src={image.dots}
         alt="No partners" 
-        className="w-16 h-16 mx-auto opacity-30"
+        className="w-12 h-12 sm:w-16 sm:h-16 mx-auto opacity-30"
       />
     </div>
-    <p className="text-gray-500 text-lg mb-2">No partners added yet.</p>
-    <p className="text-gray-400 mb-4">Add your first partner to get started</p>
+    <p className="text-gray-500 text-base sm:text-lg mb-2">No partners added yet.</p>
+    <p className="text-gray-400 mb-4 text-sm sm:text-base">Add your first partner to get started</p>
     <button
       onClick={onAddPartner}
-      className="px-4 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600 transition-colors"
+      className="px-4 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600 transition-colors text-sm sm:text-base"
     >
       <i className="fa-solid fa-plus mr-2"></i>
       Add Your First Partner
@@ -203,17 +203,17 @@ const PartnerRow = ({ partner, index, isAnimating, animationType, onToggleDropdo
         : 'hover:bg-gray-50'
     } transition-all duration-300`}
   >
-    <td className="px-6 py-3 w-2/5">
-      <div className="truncate max-w-full" title={partner.brandname}>
+    <td className="px-3 sm:px-6 py-3 w-2/5">
+      <div className="truncate max-w-full text-sm sm:text-base" title={partner.brandname}>
         {partner.brandname}
       </div>
     </td>
-    <td className="px-6 py-3 w-2/5">
-      <div className="truncate max-w-full" title={partner.name}>
+    <td className="px-3 sm:px-6 py-3 w-2/5">
+      <div className="truncate max-w-full text-sm sm:text-base" title={partner.name}>
         {partner.name}
       </div>
     </td>
-    <td className="px-6 py-3 w-1/5">
+    <td className="px-3 sm:px-6 py-3 w-1/5">
       <div className="flex justify-center">
         <div className="relative" ref={isDropdownOpen ? dropdownRef : null}>
           <button
@@ -249,6 +249,10 @@ const Partners = () => {
   const [animation, setAnimation] = useState({ index: null, type: null });
   const [searchTerm, setSearchTerm] = useState("");
   
+  // Responsive sidebar states
+  const [isSidebarOpen, setIsSidebarOpen] = useState(false);
+  const [isMobile, setIsMobile] = useState(false);
+  
   // Refs
   const dropdownRef = useRef(null);
   const tableRef = useRef(null);
@@ -256,6 +260,26 @@ const Partners = () => {
   useEffect(() => {
     localStorage.setItem("partners", JSON.stringify(partners));
   }, [partners]);
+
+  // Handle responsive behavior
+  useEffect(() => {
+    const checkScreenSize = () => {
+      setIsMobile(window.innerWidth < 1024);
+      // Auto-close sidebar on mobile when screen size changes
+      if (window.innerWidth < 1024) {
+        setIsSidebarOpen(false);
+      }
+    };
+
+    // Check initial screen size
+    checkScreenSize();
+
+    // Add event listener for window resize
+    window.addEventListener('resize', checkScreenSize);
+
+    // Cleanup
+    return () => window.removeEventListener('resize', checkScreenSize);
+  }, []);
 
   // Close dropdown when clicking outside
   useEffect(() => {
@@ -270,6 +294,15 @@ const Partners = () => {
       document.removeEventListener('mousedown', handleClickOutside);
     };
   }, []);
+
+  // Sidebar handlers
+  const toggleSidebar = () => {
+    setIsSidebarOpen(!isSidebarOpen);
+  };
+
+  const closeSidebar = () => {
+    setIsSidebarOpen(false);
+  };
 
   // Modal handlers
   const openModal = useCallback((partnerToEdit = null, index = null) => {
@@ -312,7 +345,7 @@ const Partners = () => {
     closeModal();
   }, [editIndex, closeModal]);
 
-  // Delete partner with animation - FIXED
+  // Delete partner with animation
   const deletePartner = useCallback((index) => {
     setAnimation({ index, type: "delete" });
     setActiveDropdownIndex(null);
@@ -323,7 +356,7 @@ const Partners = () => {
     }, 500);
   }, []);
 
-  // Toggle dropdown with improved event handling - FIXED
+  // Toggle dropdown with improved event handling
   const toggleDropdown = useCallback((index, e) => {
     if (e) e.stopPropagation();
     setActiveDropdownIndex(prev => prev === index ? null : index);
@@ -345,62 +378,100 @@ const Partners = () => {
   }, [partners, searchTerm]);
 
   return (
-    <div className="min-h-screen bg-gray-200">
+    <div className="min-h-screen bg-gray-100/10">
       <NavBar />
-      <div className="flex m-4 gap-3">
-        <Leftsidebar />
-        <div className="flex-1">
-          <div className="bg-white rounded-2xl h-[calc(100vh-6rem)] shadow-md">
+      
+      <div className="flex flex-col lg:flex-row gap-2 p-2 sm:p-3 lg:p-4">
+        {/* Mobile Sidebar Toggle Button */}
+        <button
+          onClick={toggleSidebar}
+          className="lg:hidden bg-white p-3 sm:p-4 rounded-lg shadow-md mb-2 flex items-center gap-2 hover:bg-gray-50 transition-colors active:scale-95"
+          aria-label="Toggle sidebar"
+        >
+          <i className={`fa-solid ${isSidebarOpen ? 'fa-times' : 'fa-bars'} text-gray-700 text-lg`}></i>
+          <span className="text-gray-700 font-medium text-sm sm:text-base">
+            {isSidebarOpen ? 'Close Menu' : 'Open Menu'}
+          </span>
+        </button>
+
+        {/* Sidebar Container */}
+        <div className={`
+          ${isSidebarOpen ? 'block' : 'hidden'} 
+          lg:block 
+          w-full lg:w-auto 
+          lg:flex-shrink-0
+          transition-all duration-300 ease-in-out
+          ${isMobile ? 'fixed inset-0 z-50 bg-white' : ''}
+        `}>
+          <Leftsidebar 
+            onClose={closeSidebar} 
+            isMobile={isMobile}
+            isOpen={isSidebarOpen}
+          />
+        </div>
+
+        {/* Mobile Overlay */}
+        {isSidebarOpen && isMobile && (
+          <div
+            className="lg:hidden fixed inset-0 bg-black bg-opacity-50 z-40"
+            onClick={closeSidebar}
+            aria-label="Close sidebar overlay"
+          ></div>
+        )}
+
+        {/* Main Content Area */}
+        <div className="flex-1 w-full lg:w-auto min-w-0">
+          <div className="bg-white rounded-xl lg:rounded-2xl shadow-lg overflow-hidden" style={{ height: "calc(100vh - 8rem)" }}>
             {/* Header with Add Partner button and search */}
-            <div className="p-6 flex flex-col sm:flex-row justify-between items-center border-b border-gray-200 gap-4">
-              <h1 className="text-2xl font-semibold text-gray-800">Partner Management</h1>
-              
-              <div className="flex flex-col sm:flex-row gap-4 w-full sm:w-auto">
-                {/* Search box */}
-                <div className="relative w-full sm:w-64">
-                  <input
-                    type="text"
-                    placeholder="Search partners..."
-                    value={searchTerm}
-                    onChange={(e) => setSearchTerm(e.target.value)}
-                    className="w-full px-4 py-2 pl-10 pr-4 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition-all"
-                    aria-label="Search partners"
-                  />
-                  <div className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400">
-                    <i className="fa-solid fa-search"></i>
-                  </div>
-                  {searchTerm && (
-                    <button 
-                      onClick={() => setSearchTerm("")}
-                      className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400 hover:text-gray-600"
-                      aria-label="Clear search"
-                    >
-                      <i className="fa-solid fa-times"></i>
-                    </button>
-                  )}
-                </div>
+            <div className="p-4 sm:p-6 flex flex-col gap-4 border-b border-gray-200">
+              <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
+                <h1 className="text-xl sm:text-2xl font-semibold text-gray-800">Partner Management</h1>
                 
-                {/* Add partner button */}
+                {/* Add partner button - Mobile first */}
                 <button
                   onClick={() => openModal()}
-                  className="flex items-center justify-center gap-2 px-4 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600 transition-colors w-full sm:w-auto"
+                  className="flex items-center justify-center gap-2 px-4 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600 transition-colors w-full sm:w-auto text-sm sm:text-base"
                   aria-label="Add new partner"
                 >
                   <i className="fa-solid fa-plus"></i>
                   <span>Add Partner</span>
                 </button>
               </div>
+              
+              {/* Search box */}
+              <div className="relative w-full sm:w-80">
+                <input
+                  type="text"
+                  placeholder="Search partners..."
+                  value={searchTerm}
+                  onChange={(e) => setSearchTerm(e.target.value)}
+                  className="w-full px-4 py-2 pl-10 pr-4 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition-all text-sm sm:text-base"
+                  aria-label="Search partners"
+                />
+                <div className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400">
+                  <i className="fa-solid fa-search"></i>
+                </div>
+                {searchTerm && (
+                  <button 
+                    onClick={() => setSearchTerm("")}
+                    className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400 hover:text-gray-600"
+                    aria-label="Clear search"
+                  >
+                    <i className="fa-solid fa-times"></i>
+                  </button>
+                )}
+              </div>
             </div>
 
             {/* Content area */}
-            <div className="py-2 px-6 ">
+            <div className="flex-1 overflow-hidden">
               {filteredAndSortedPartners.length === 0 ? (
                 searchTerm ? (
-                  <div className="text-center py-12">
-                    <p className="text-gray-500 text-lg">No results found for "{searchTerm}"</p>
+                  <div className="text-center py-8 sm:py-12 px-4">
+                    <p className="text-gray-500 text-base sm:text-lg">No results found for "{searchTerm}"</p>
                     <button
                       onClick={() => setSearchTerm("")}
-                      className="mt-4 px-4 py-2 text-blue-500 hover:text-blue-600 transition-colors"
+                      className="mt-4 px-4 py-2 text-blue-500 hover:text-blue-600 transition-colors text-sm sm:text-base"
                     >
                       Clear search
                     </button>
@@ -409,50 +480,100 @@ const Partners = () => {
                   <EmptyState onAddPartner={() => openModal()} />
                 ) : null
               ) : (
-                <div className="overflow-hidden flex flex-col">
-                  {/* Fixed table header */}
-                  <table className="w-full border-collapse">
-                    <thead>
-                      <tr className="bg-gray-200 border-b border-gray-300">
-                        <th className="px-6 py-3 text-left font-semibold w-2/5">
-                          Brand Name
-                        </th>
-                        <th className="px-6 py-3 text-left font-semibold w-2/5">
-                          Partner Name
-                        </th>
-                        <th className="px-6 py-3 text-center font-semibold w-1/5">Actions</th>
-                      </tr>
-                    </thead>
-                  </table>
-                  
-                  {/* Scrollable table body */}
-                  <div 
-                    ref={tableRef}
-                    className="overflow-y-auto overflow-x-hidden scrollbar-thin" 
-                    style={{ maxHeight: "calc(100vh - 290px)" }}
-                  >
-                    <table className="w-full border-collapse">
-                      <tbody>
-                        {filteredAndSortedPartners.map((partner, index) => (
-                          <PartnerRow
-                            key={`${partner.name}-${partner.brandname}-${index}`}
-                            partner={partner}
-                            index={index}
-                            isAnimating={animation.index === index}
-                            animationType={animation.type}
-                            onToggleDropdown={toggleDropdown}
-                            isDropdownOpen={activeDropdownIndex === index}
-                            dropdownRef={dropdownRef}
-                            onEdit={openModal}
-                            onDelete={deletePartner}
-                          />
-                        ))}
-                      </tbody>
-                    </table>
+                <div className="flex flex-col h-full">
+                  {/* Desktop Table View */}
+                  <div className="hidden sm:flex flex-col h-full">
+                    {/* Fixed table header */}
+                    <div className="flex-shrink-0">
+                      <table className="w-full border-collapse">
+                        <thead>
+                          <tr className="bg-gray-200 border-b border-gray-300">
+                            <th className="px-6 py-3 text-left font-semibold w-2/5">
+                              Brand Name
+                            </th>
+                            <th className="px-6 py-3 text-left font-semibold w-2/5">
+                              Partner Name
+                            </th>
+                            <th className="px-6 py-3 text-center font-semibold w-1/5">Actions</th>
+                          </tr>
+                        </thead>
+                      </table>
+                    </div>
+                    
+                    {/* Scrollable table body */}
+                    <div 
+                      ref={tableRef}
+                      className="flex-1 overflow-y-auto scrollbar-thin"
+                    >
+                      <table className="w-full border-collapse">
+                        <tbody>
+                          {filteredAndSortedPartners.map((partner, index) => (
+                            <PartnerRow
+                              key={`${partner.name}-${partner.brandname}-${index}`}
+                              partner={partner}
+                              index={index}
+                              isAnimating={animation.index === index}
+                              animationType={animation.type}
+                              onToggleDropdown={toggleDropdown}
+                              isDropdownOpen={activeDropdownIndex === index}
+                              dropdownRef={dropdownRef}
+                              onEdit={openModal}
+                              onDelete={deletePartner}
+                            />
+                          ))}
+                        </tbody>
+                      </table>
+                    </div>
+                  </div>
+
+                  {/* Mobile Card View */}
+                  <div className="sm:hidden flex-1 overflow-y-auto p-4 space-y-3">
+                    {filteredAndSortedPartners.map((partner, index) => (
+                      <div
+                        key={`${partner.name}-${partner.brandname}-${index}`}
+                        className={`bg-white border border-gray-200 rounded-lg p-4 shadow-sm ${
+                          animation.index === index && animation.type === 'delete' 
+                            ? 'animate-slide-out-right opacity-0' 
+                            : animation.index === index && animation.type === 'update'
+                            ? 'animate-pulse bg-blue-50'
+                            : ''
+                        }`}
+                      >
+                        <div className="flex justify-between items-start">
+                          <div className="flex-1 min-w-0">
+                            <div className="mb-2">
+                              <p className="text-xs text-gray-500 mb-1">Brand Name</p>
+                              <p className="font-medium text-gray-800 truncate">{partner.brandname}</p>
+                            </div>
+                            <div>
+                              <p className="text-xs text-gray-500 mb-1">Partner Name</p>
+                              <p className="font-medium text-gray-800 truncate">{partner.name}</p>
+                            </div>
+                          </div>
+                          <div className="relative ml-4" ref={activeDropdownIndex === index ? dropdownRef : null}>
+                            <button
+                              onClick={(e) => toggleDropdown(index, e)}
+                              className="hover:bg-gray-100 rounded-full p-2 transition-colors"
+                              aria-label="More options"
+                            >
+                              <img src={image.dots} alt="More options" width="16" height="20" />
+                            </button>
+                            
+                            <PartnerDropdown 
+                              isOpen={activeDropdownIndex === index}
+                              onEdit={() => openModal(partner, index)}
+                              onDelete={() => deletePartner(index)}
+                              onClose={() => toggleDropdown(null)}
+                              dropdownRef={dropdownRef}
+                            />
+                          </div>
+                        </div>
+                      </div>
+                    ))}
                   </div>
                   
                   {/* Partner count */}
-                  <div className="flex justify-between items-center py-3 px-6 border-t border-gray-200 text-sm text-gray-500">
+                  <div className="flex-shrink-0 flex justify-between items-center py-3 px-4 sm:px-6 border-t border-gray-200 text-xs sm:text-sm text-gray-500">
                     <div>
                       {searchTerm 
                         ? `${filteredAndSortedPartners.length} of ${partners.length} partners`
@@ -517,7 +638,6 @@ const Partners = () => {
         .scrollbar-thin::-webkit-scrollbar {
           display: none;
         }
-
       `}</style>
     </div>
   );
