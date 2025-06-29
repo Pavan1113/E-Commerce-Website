@@ -109,10 +109,10 @@ const CollectionModal = ({ isOpen, collection, brands, partners, onClose, onSave
   if (!isOpen) return null;
 
   return (
-    <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 animate-fade-in">
+    <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 animate-fade-in p-4">
       <div ref={modalRef} className="bg-white rounded-lg shadow-xl w-full max-w-md overflow-hidden animate-scale-in">
         <div className="p-4 flex justify-between items-center border-b border-gray-200">
-          <h2 className="text-xl font-semibold text-gray-800">
+          <h2 className="text-lg sm:text-xl font-semibold text-gray-800">
             {isEditing ? "Edit Collection" : "Add New Collection"}
           </h2>
           <button 
@@ -124,9 +124,9 @@ const CollectionModal = ({ isOpen, collection, brands, partners, onClose, onSave
           </button>
         </div>
         
-        <form onSubmit={handleSubmit} className="p-6">
+        <form onSubmit={handleSubmit} className="p-4 sm:p-6">
           <div className="mb-4">
-            <label htmlFor="brandSelect" className="block text-gray-700 font-medium mb-2">
+            <label htmlFor="brandSelect" className="block text-gray-700 font-medium mb-2 text-sm sm:text-base">
               Brand Name <span className="text-red-500">*</span>
             </label>
             <select
@@ -134,7 +134,7 @@ const CollectionModal = ({ isOpen, collection, brands, partners, onClose, onSave
               name="brandname"
               value={formData.brandname}
               onChange={handleInputChange}
-              className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition-all"
+              className="w-full px-3 sm:px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition-all text-sm sm:text-base"
               required
             >
               <option value="" disabled>Select Brand</option>
@@ -147,7 +147,7 @@ const CollectionModal = ({ isOpen, collection, brands, partners, onClose, onSave
           </div>
           
           <div className="mb-4">
-            <label htmlFor="partnerSelect" className="block text-gray-700 font-medium mb-2">
+            <label htmlFor="partnerSelect" className="block text-gray-700 font-medium mb-2 text-sm sm:text-base">
               Partner Name <span className="text-red-500">*</span>
             </label>
             <select
@@ -156,7 +156,7 @@ const CollectionModal = ({ isOpen, collection, brands, partners, onClose, onSave
               value={formData.partnersname}
               onChange={handleInputChange}
               disabled={!formData.brandname}
-              className={`w-full px-4 py-2 border border-gray-300 rounded-lg outline-none transition-all ${
+              className={`w-full px-3 sm:px-4 py-2 border border-gray-300 rounded-lg outline-none transition-all text-sm sm:text-base ${
                 !formData.brandname ? "bg-gray-100 cursor-not-allowed" : "focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
               }`}
               required
@@ -171,14 +171,14 @@ const CollectionModal = ({ isOpen, collection, brands, partners, onClose, onSave
               ))}
             </select>
             {formData.brandname && filteredPartners.length === 0 && (
-              <p className="text-orange-500 text-sm mt-1">
+              <p className="text-orange-500 text-xs sm:text-sm mt-1">
                 No partners available for this brand. Please add a partner first.
               </p>
             )}
           </div>
           
           <div className="mb-4">
-            <label htmlFor="collectionName" className="block text-gray-700 font-medium mb-2">
+            <label htmlFor="collectionName" className="block text-gray-700 font-medium mb-2 text-sm sm:text-base">
               Collection Name <span className="text-red-500">*</span>
             </label>
             <input
@@ -188,23 +188,23 @@ const CollectionModal = ({ isOpen, collection, brands, partners, onClose, onSave
               value={formData.name}
               onChange={handleInputChange}
               placeholder="Enter collection name"
-              className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition-all"
+              className="w-full px-3 sm:px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition-all text-sm sm:text-base"
               required
             />
           </div>
           
-          <div className="flex justify-end gap-3 mt-6">
+          <div className="flex flex-col-reverse sm:flex-row justify-end gap-3 mt-6">
             <button
               type="button"
               onClick={onClose}
-              className="px-4 py-2 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 transition-colors"
+              className="px-4 py-2 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 transition-colors text-sm sm:text-base"
             >
               Cancel
             </button>
             <button
               type="submit"
               disabled={!formData.name.trim() || !formData.brandname || !formData.partnersname}
-              className={`px-4 py-2 rounded-lg ${
+              className={`px-4 py-2 rounded-lg text-sm sm:text-base ${
                 formData.name.trim() && formData.brandname && formData.partnersname
                   ? "bg-blue-500 hover:bg-blue-600 text-white" 
                   : "bg-blue-300 text-white cursor-not-allowed"
@@ -220,19 +220,19 @@ const CollectionModal = ({ isOpen, collection, brands, partners, onClose, onSave
 };
 
 const EmptyState = ({ onAddCollection }) => (
-  <div className="text-center py-12">
+  <div className="text-center py-8 sm:py-12 px-4">
     <div className="mb-4">
       <img 
         src={image.dots}
         alt="No collections" 
-        className="w-16 h-16 mx-auto opacity-30"
+        className="w-12 h-12 sm:w-16 sm:h-16 mx-auto opacity-30"
       />
     </div>
-    <p className="text-gray-500 text-lg mb-2">No collections added yet.</p>
-    <p className="text-gray-400 mb-4">Add your first collection to get started</p>
+    <p className="text-gray-500 text-base sm:text-lg mb-2">No collections added yet.</p>
+    <p className="text-gray-400 mb-4 text-sm sm:text-base">Add your first collection to get started</p>
     <button
       onClick={onAddCollection}
-      className="px-4 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600 transition-colors"
+      className="px-4 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600 transition-colors text-sm sm:text-base"
     >
       <i className="fa-solid fa-plus mr-2"></i>
       Add Your First Collection
@@ -273,6 +273,10 @@ const Collection = () => {
   const [editIndex, setEditIndex] = useState(null);
   const [searchTerm, setSearchTerm] = useState("");
   
+  // Sidebar state management (like AdminDashboard)
+  const [isSidebarOpen, setIsSidebarOpen] = useState(false);
+  const [isMobile, setIsMobile] = useState(false);
+  
   const rowRefs = useRef({});
   
   const brands = useMemo(() => {
@@ -303,6 +307,34 @@ const Collection = () => {
       collection.partnersname.toLowerCase().includes(lowercasedFilter)
     );
   }, [collections, searchTerm]);
+
+  // Handle responsive behavior (like AdminDashboard)
+  useEffect(() => {
+    const checkScreenSize = () => {
+      setIsMobile(window.innerWidth < 1024);
+      // Auto-close sidebar on mobile when screen size changes
+      if (window.innerWidth < 1024) {
+        setIsSidebarOpen(false);
+      }
+    };
+
+    // Check initial screen size
+    checkScreenSize();
+
+    // Add event listener for window resize
+    window.addEventListener('resize', checkScreenSize);
+
+    // Cleanup
+    return () => window.removeEventListener('resize', checkScreenSize);
+  }, []);
+
+  const toggleSidebar = () => {
+    setIsSidebarOpen(!isSidebarOpen);
+  };
+
+  const closeSidebar = () => {
+    setIsSidebarOpen(false);
+  };
 
   // Handle clicks outside dropdown
   useEffect(() => {
@@ -425,25 +457,75 @@ const Collection = () => {
   }, [deleteCollection]);
 
   return (
-    <div className="min-h-screen bg-gray-200">
+    <div className="min-h-screen bg-gray-100/10">
       <NavBar />
-      <div className="flex m-4 gap-3">
-        <Leftsidebar />
-        <div className="flex-1">
-          <div className="bg-white rounded-2xl h-[calc(100vh-6rem)] shadow-md">
+      
+      <div className="flex flex-col lg:flex-row gap-2 p-2 sm:p-3 lg:p-4">
+        {/* Mobile Sidebar Toggle Button */}
+        <button
+          onClick={toggleSidebar}
+          className="lg:hidden bg-white p-3 sm:p-4 rounded-lg shadow-md mb-2 flex items-center gap-2 hover:bg-gray-50 transition-colors active:scale-95"
+          aria-label="Toggle sidebar"
+        >
+          <i className={`fa-solid ${isSidebarOpen ? 'fa-times' : 'fa-bars'} text-gray-700 text-lg`}></i>
+          <span className="text-gray-700 font-medium text-sm sm:text-base">
+            {isSidebarOpen ? 'Close Menu' : 'Open Menu'}
+          </span>
+        </button>
+
+        {/* Sidebar Container */}
+        <div className={`
+          ${isSidebarOpen ? 'block' : 'hidden'} 
+          lg:block 
+          w-full lg:w-auto 
+          lg:flex-shrink-0
+          transition-all duration-300 ease-in-out
+          ${isMobile ? 'fixed inset-0 z-50 bg-white' : ''}
+        `}>
+          <Leftsidebar 
+            onClose={closeSidebar} 
+            isMobile={isMobile}
+            isOpen={isSidebarOpen}
+          />
+        </div>
+
+        {/* Mobile Overlay */}
+        {isSidebarOpen && isMobile && (
+          <div
+            className="lg:hidden fixed inset-0 bg-black bg-opacity-50 z-40"
+            onClick={closeSidebar}
+            aria-label="Close sidebar overlay"
+          ></div>
+        )}
+
+        {/* Main Content Area */}
+        <div className="flex-1 w-full lg:w-auto min-w-0">
+          <div className="bg-white rounded-xl lg:rounded-2xl min-h-[calc(100vh-6rem)] shadow-md overflow-hidden">
             {/* Header */}
-            <div className="p-6 flex flex-col sm:flex-row justify-between items-center border-b border-gray-200 gap-4">
-              <h1 className="text-2xl font-semibold text-gray-800">Collection Management</h1>
+            <div className="p-4 sm:p-6 flex flex-col gap-4 border-b border-gray-200">
+              <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
+                <h1 className="text-xl sm:text-2xl font-semibold text-gray-800">Collection Management</h1>
+                
+                {/* Add collection button - Desktop */}
+                <button
+                  onClick={() => openModal()}
+                  className="hidden sm:flex items-center justify-center gap-2 px-4 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600 transition-colors"
+                >
+                  <i className="fa-solid fa-plus"></i>
+                  <span>Add Collection</span>
+                </button>
+              </div>
               
-              <div className="flex flex-col sm:flex-row gap-4 w-full sm:w-auto">
+              {/* Search box and mobile add button */}
+              <div className="flex flex-col sm:flex-row gap-3 sm:gap-4">
                 {/* Search box */}
-                <div className="relative w-full sm:w-64">
+                <div className="relative flex-1 sm:max-w-64">
                   <input
                     type="text"
                     placeholder="Search collections..."
                     value={searchTerm}
                     onChange={(e) => setSearchTerm(e.target.value)}
-                    className="w-full px-4 py-2 pl-10 pr-4 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition-all"
+                    className="w-full px-4 py-2 pl-10 pr-4 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition-all text-sm sm:text-base"
                   />
                   <div className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400">
                     <i className="fa-solid fa-search"></i>
@@ -458,10 +540,10 @@ const Collection = () => {
                   )}
                 </div>
                 
-                {/* Add collection button */}
+                {/* Add collection button - Mobile */}
                 <button
                   onClick={() => openModal()}
-                  className="flex items-center justify-center gap-2 px-4 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600 transition-colors w-full sm:w-auto"
+                  className="flex sm:hidden items-center justify-center gap-2 px-4 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600 transition-colors"
                 >
                   <i className="fa-solid fa-plus"></i>
                   <span>Add Collection</span>
@@ -470,14 +552,14 @@ const Collection = () => {
             </div>
 
             {/* Content area */}
-            <div className="py-2 px-6">
+            <div className="py-2 px-4 sm:px-6">
               {filteredCollections.length === 0 ? (
                 searchTerm ? (
-                  <div className="text-center py-12">
-                    <p className="text-gray-500 text-lg">No results found for "{searchTerm}"</p>
+                  <div className="text-center py-8 sm:py-12 px-4">
+                    <p className="text-gray-500 text-base sm:text-lg">No results found for "{searchTerm}"</p>
                     <button
                       onClick={() => setSearchTerm("")}
-                      className="mt-4 px-4 py-2 text-blue-500 hover:text-blue-600 transition-colors"
+                      className="mt-4 px-4 py-2 text-blue-500 hover:text-blue-600 transition-colors text-sm sm:text-base"
                     >
                       Clear search
                     </button>
@@ -487,73 +569,117 @@ const Collection = () => {
                 ) : null
               ) : (
                 <div className="overflow-hidden flex flex-col">
-                  {/* Table header */}
-                  <table className="w-full table-fixed border-collapse">
-                    <thead>
-                      <tr className="bg-gray-200 border-b border-gray-300">
-                        <th className="px-6 py-3 text-left font-semibold">Brand Name</th>
-                        <th className="px-6 py-3 text-left font-semibold">Partner Name</th>
-                        <th className="px-6 py-3 text-left font-semibold">Collection Name</th>
-                        <th className="px-6 py-3 text-center font-semibold">Action</th>
-                      </tr>
-                    </thead>
-                  </table>
-                  
-                  {/* Table body */}
-                  <div 
-                    className="overflow-y-auto overflow-x-hidden scrollbar-thin" 
-                    style={{ maxHeight: "calc(100vh - 290px)" }}
-                  >
-                    <table className="w-full table-fixed border-collapse">
-                      <tbody>
-                        {filteredCollections.map((collection, index) => (
-                          <tr 
-                            key={`${collection.name}-${collection.brandname}-${index}`}
-                            ref={(el) => { if (el) rowRefs.current[index] = el; }}
-                            className="border-b border-gray-200 hover:bg-gray-50 transition-colors relative"
+                  {/* Mobile Card View */}
+                  <div className="lg:hidden space-y-3 py-4">
+                    {filteredCollections.map((collection, index) => (
+                      <div 
+                        key={`${collection.name}-${collection.brandname}-${index}`}
+                        className="bg-gray-50 rounded-lg p-4 relative"
+                      >
+                        <div className="flex justify-between items-start mb-3">
+                          <h3 className="font-semibold text-gray-800 text-sm truncate pr-2">
+                            {collection.name}
+                          </h3>
+                          <button
+                            onClick={(e) => toggleDropdown(index, e)}
+                            data-dropdown-toggle="true"
+                            className="hover:bg-gray-200 rounded-full p-1 transition-colors flex-shrink-0"
                           >
-                            <td className="px-6 py-3">
-                              <div className="truncate" title={collection.brandname}>
-                                {collection.brandname}
-                              </div>
-                            </td>
-                            <td className="px-6 py-3">
-                              <div className="truncate" title={collection.partnersname}>
-                                {collection.partnersname}
-                              </div>
-                            </td>
-                            <td className="px-6 py-3">
-                              <div className="truncate" title={collection.name}>
-                                {collection.name}
-                              </div>
-                            </td>
-                            <td className="px-6 py-3">
-                              <div className="flex justify-center relative">
-                                <button
-                                  onClick={(e) => toggleDropdown(index, e)}
-                                  data-dropdown-toggle="true"
-                                  className="hover:bg-gray-100 rounded-full p-1 transition-colors"
-                                >
-                                  <img src={image.dots} alt="More options" width="20" height="24" />
-                                </button>
-                                
-                                <CollectionDropdown 
-                                  isOpen={activeDropdownIndex === index}
-                                  onEdit={() => handleEdit(collection, index)}
-                                  onDelete={() => handleDelete(index)}
-                                  onClose={() => setActiveDropdownIndex(null)}
-                                  position={getDropdownPosition(index)}
-                                />
-                              </div>
-                            </td>
-                          </tr>
-                        ))}
-                      </tbody>
+                            <img src={image.dots} alt="More options" width="20" height="24" />
+                          </button>
+                          
+                          <CollectionDropdown 
+                            isOpen={activeDropdownIndex === index}
+                            onEdit={() => handleEdit(collection, index)}
+                            onDelete={() => handleDelete(index)}
+                            onClose={() => setActiveDropdownIndex(null)}
+                            position={getDropdownPosition(index)}
+                          />
+                        </div>
+                        <div className="space-y-2 text-sm">
+                          <div>
+                            <span className="text-gray-600 font-medium">Brand:</span>
+                            <span className="ml-2 text-gray-800">{collection.brandname}</span>
+                          </div>
+                          <div>
+                            <span className="text-gray-600 font-medium">Partner:</span>
+                            <span className="ml-2 text-gray-800">{collection.partnersname}</span>
+                          </div>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+
+                  {/* Desktop Table View */}
+                  <div className="hidden lg:block">
+                    {/* Table header */}
+                    <table className="w-full table-fixed border-collapse">
+                      <thead>
+                        <tr className="bg-gray-200 border-b border-gray-300">
+                          <th className="px-6 py-3 text-left font-semibold">Brand Name</th>
+                          <th className="px-6 py-3 text-left font-semibold">Partner Name</th>
+                          <th className="px-6 py-3 text-left font-semibold">Collection Name</th>
+                          <th className="px-6 py-3 text-center font-semibold">Action</th>
+                        </tr>
+                      </thead>
                     </table>
+                    
+                    {/* Table body */}
+                    <div 
+                      className="overflow-y-auto overflow-x-hidden scrollbar-thin" 
+                      style={{ maxHeight: "calc(100vh - 340px)" }}
+                    >
+                      <table className="w-full table-fixed border-collapse">
+                        <tbody>
+                          {filteredCollections.map((collection, index) => (
+                            <tr 
+                              key={`${collection.name}-${collection.brandname}-${index}`}
+                              ref={(el) => { if (el) rowRefs.current[index] = el; }}
+                              className="border-b border-gray-200 hover:bg-gray-50 transition-colors relative"
+                            >
+                              <td className="px-6 py-3">
+                                <div className="truncate" title={collection.brandname}>
+                                  {collection.brandname}
+                                </div>
+                              </td>
+                              <td className="px-6 py-3">
+                                <div className="truncate" title={collection.partnersname}>
+                                  {collection.partnersname}
+                                </div>
+                              </td>
+                              <td className="px-6 py-3">
+                                <div className="truncate" title={collection.name}>
+                                  {collection.name}
+                                </div>
+                              </td>
+                              <td className="px-6 py-3">
+                                <div className="flex justify-center relative">
+                                  <button
+                                    onClick={(e) => toggleDropdown(index, e)}
+                                    data-dropdown-toggle="true"
+                                    className="hover:bg-gray-100 rounded-full p-1 transition-colors"
+                                  >
+                                    <img src={image.dots} alt="More options" width="20" height="24" />
+                                  </button>
+                                  
+                                  <CollectionDropdown 
+                                    isOpen={activeDropdownIndex === index}
+                                    onEdit={() => handleEdit(collection, index)}
+                                    onDelete={() => handleDelete(index)}
+                                    onClose={() => setActiveDropdownIndex(null)}
+                                    position={getDropdownPosition(index)}
+                                  />
+                                </div>
+                              </td>
+                            </tr>
+                          ))}
+                        </tbody>
+                      </table>
+                    </div>
                   </div>
                   
                   {/* Footer */}
-                  <div className="flex justify-between items-center py-3 px-6 border-t border-gray-200 text-sm text-gray-500">
+                  <div className="flex justify-between items-center py-3 px-2 sm:px-6 border-t border-gray-200 text-xs sm:text-sm text-gray-500">
                     <div>
                       {searchTerm 
                         ? `${filteredCollections.length} of ${collections.length} collections`
