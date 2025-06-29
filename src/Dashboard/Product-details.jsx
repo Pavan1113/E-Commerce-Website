@@ -16,15 +16,6 @@ const Product = () => {
     return savedCart ? JSON.parse(savedCart) : [];
   });
 
-  // Redirect if no product data is available
-  useEffect(() => {
-    if (!product) {
-      navigate('/'); // or navigate to products page
-      return;
-    }
-    setImageLoaded(true);
-  }, [product, navigate]);
-
   // Save cart to localStorage whenever cart changes
   useEffect(() => {
     localStorage.setItem("cart", JSON.stringify(cart));
@@ -33,7 +24,7 @@ const Product = () => {
   // Don't render if no product data
   if (!product) {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-gray-50 via-white to-gray-100 flex items-center justify-center">
+      <div className="min-h-screen bg-gradient-to-br from-gray-50 via-white to-gray-100 flex items-center justify-center px-4">
         <div className="text-center">
           <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 mx-auto mb-4"></div>
           <p className="text-gray-600">Loading product...</p>
@@ -54,7 +45,6 @@ const Product = () => {
     const existingItemIndex = cart.findIndex((cartItem) => cartItem.id === product.id);
     
     if (existingItemIndex !== -1) {
-      // If item exists, update quantity
       const updatedCart = [...cart];
       updatedCart[existingItemIndex] = {
         ...updatedCart[existingItemIndex],
@@ -62,24 +52,21 @@ const Product = () => {
       };
       setCart(updatedCart);
     } else {
-      // If item doesn't exist, add new item
       const newItem = {
         ...product,
         quantity: quantity,
-        addedAt: new Date().toISOString() // Optional: track when item was added
+        addedAt: new Date().toISOString()
       };
       setCart([...cart, newItem]);
     }
     
-    // Optional: Show success message or feedback
     alert(`Added ${quantity} item(s) to cart!`);
   };
 
-    const handleBuy = () => {
+  const handleBuy = () => {
     const existingItemIndex = cart.findIndex((cartItem) => cartItem.id === product.id);
     
     if (existingItemIndex !== -1) {
-      // If item exists, update quantity
       const updatedCart = [...cart];
       updatedCart[existingItemIndex] = {
         ...updatedCart[existingItemIndex],
@@ -87,11 +74,10 @@ const Product = () => {
       };
       setCart(updatedCart);
     } else {
-      // If item doesn't exist, add new item
       const newItem = {
         ...product,
         quantity: quantity,
-        addedAt: new Date().toISOString() // Optional: track when item was added
+        addedAt: new Date().toISOString()
       };
       setCart([...cart, newItem]);
     }
@@ -106,19 +92,19 @@ const Product = () => {
     
     for (let i = 0; i < fullStars; i++) {
       stars.push(
-        <i key={i} className="fas fa-star text-yellow-400 text-lg"></i>
+        <i key={i} className="fas fa-star text-yellow-400 text-sm sm:text-lg"></i>
       );
     }
     
     if (hasHalfStar) {
       stars.push(
-        <i key="half" className="fas fa-star-half-alt text-yellow-400 text-lg"></i>
+        <i key="half" className="fas fa-star-half-alt text-yellow-400 text-sm sm:text-lg"></i>
       );
     }
     
     for (let i = stars.length; i < 5; i++) {
       stars.push(
-        <i key={i} className="far fa-star text-gray-300 text-lg"></i>
+        <i key={i} className="far fa-star text-gray-300 text-sm sm:text-lg"></i>
       );
     }
     
@@ -131,18 +117,32 @@ const Product = () => {
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-gray-50 via-white to-gray-100">
-      {/* Navigation would go here */}
-      <div className="pt-20 px-4 sm:px-6 lg:px-8 max-w-7xl mx-auto">
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 py-12">
+      {/* Container with proper responsive padding */}
+      <div className="pt-16 sm:pt-20 px-4 sm:px-6 lg:px-8 max-w-7xl mx-auto">
+        
+        {/* Back Button - Mobile optimized */}
+        <div className="pb-4 sm:pb-6">
+          <button 
+            onClick={() => navigate(-1)}
+            className="flex items-center gap-2 text-blue-600 hover:text-blue-700 font-medium transition-colors text-sm sm:text-base"
+          >
+            <i className="fas fa-arrow-left text-sm"></i>
+            <span className="hidden sm:inline">Back to Products</span>
+            <span className="sm:hidden">Back</span>
+          </button>
+        </div>
+
+        {/* Main Grid - Responsive layout */}
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 sm:gap-8 lg:gap-12 pb-8 sm:pb-12">
           
           {/* Image Section */}
-          <div className="space-y-4">
-            <div className={`relative group overflow-hidden rounded-3xl bg-white shadow-2xl transition-all duration-700 ${imageLoaded ? 'scale-100 opacity-100' : 'scale-95 opacity-0'}`}>
-              <div className="aspect-square p-8">
+          <div className="space-y-3 sm:space-y-4">
+            <div className={`relative group overflow-hidden rounded-2xl sm:rounded-3xl bg-white shadow-xl sm:shadow-2xl transition-all duration-700 ${imageLoaded ? 'scale-100 opacity-100' : 'scale-95 opacity-0'}`}>
+              <div className="aspect-square p-4 sm:p-6 lg:p-8">
                 <img
                   src={currentImage}
                   alt={product.collectionname || product.brandname}
-                  className="w-full h-full object-cover rounded-2xl transition-transform duration-500 group-hover:scale-105"
+                  className="w-full h-full object-cover rounded-xl sm:rounded-2xl transition-transform duration-500 group-hover:scale-105"
                   onLoad={() => setImageLoaded(true)}
                   onError={(e) => {
                     e.target.src = 'https://via.placeholder.com/400x400?text=Product+Image';
@@ -153,22 +153,22 @@ const Product = () => {
               {/* Image overlay effects */}
               <div className="absolute inset-0 bg-gradient-to-t from-black/10 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
               
-              {/* Share button */}
-              <button className="absolute top-6 right-6 w-12 h-12 bg-white/90 backdrop-blur-sm rounded-full flex items-center justify-center shadow-lg opacity-0 group-hover:opacity-100 transition-all duration-300 hover:bg-white hover:scale-110">
-                <i className="fas fa-share-alt text-gray-700"></i>
+              {/* Share button - Responsive size */}
+              <button className="absolute top-4 right-4 sm:top-6 sm:right-6 w-10 h-10 sm:w-12 sm:h-12 bg-white/90 backdrop-blur-sm rounded-full flex items-center justify-center shadow-lg opacity-0 group-hover:opacity-100 transition-all duration-300 hover:bg-white hover:scale-110">
+                <i className="fas fa-share-alt text-gray-700 text-sm sm:text-base"></i>
               </button>
             </div>
             
-            {/* Thumbnail Images - Only show if multiple images exist */}
+            {/* Thumbnail Images - Responsive grid */}
             {productImages.length > 1 && (
-              <div className="flex gap-3 justify-center">
+              <div className="flex gap-2 sm:gap-3 justify-start sm:justify-center overflow-x-auto pb-2">
                 {productImages.map((img, index) => (
                   <button
                     key={index}
                     onClick={() => setSelectedImage(index)}
-                    className={`w-20 h-20 rounded-xl overflow-hidden border-2 transition-all duration-300 ${
+                    className={`flex-shrink-0 w-16 h-16 sm:w-20 sm:h-20 rounded-lg sm:rounded-xl overflow-hidden border-2 transition-all duration-300 ${
                       selectedImage === index 
-                        ? 'border-blue-500 shadow-lg scale-110' 
+                        ? 'border-blue-500 shadow-lg scale-105 sm:scale-110' 
                         : 'border-gray-200 hover:border-gray-300'
                     }`}
                   >
@@ -187,55 +187,55 @@ const Product = () => {
           </div>
 
           {/* Product Details */}
-          <div className="space-y-8">
+          <div className="space-y-6 sm:space-y-8">
             {/* Brand and Title */}
-            <div className="space-y-2">
-              <h1 className="text-4xl font-bold text-gray-900 leading-tight">
-                {product.brandname || 'Product Name'}
+            <div className="space-y-1 sm:space-y-2">
+              <h1 className="text-2xl sm:text-3xl lg:text-4xl font-bold text-gray-900 leading-tight">
+                {product.brandname || product.title}
               </h1>
-              <p className="text-xl text-gray-600 font-medium">
-                {product.collectionname || 'Collection'}
+              <p className="text-lg sm:text-xl text-gray-600 font-medium">
+                {product.collectionname || product.category}
               </p>
             </div>
 
-            {/* Rating - Only show if rating exists */}
+            {/* Rating - Mobile optimized */}
             {product.rating && (
-              <div className="flex items-center gap-3">
+              <div className="flex items-center gap-2 sm:gap-3">
                 <div className="flex items-center gap-1">
-                  {renderStars(product.rating)}
+                  {renderStars(product.rating.rate)}
                 </div>
-                <span className="text-sm text-gray-500">
-                  {product.rating} {product.reviews && `(${product.reviews} reviews)`}
+                <span className="text-xs sm:text-sm text-gray-500">
+                  {product.rating.rate} {product.reviews && `(${product.reviews} reviews)`}
                 </span>
               </div>
             )}
 
-            {/* Price */}
-            <div className="flex items-baseline gap-3">
-              <span className="text-3xl font-bold text-gray-900">
+            {/* Price - Responsive sizing */}
+            <div className="flex flex-wrap items-baseline gap-2 sm:gap-3">
+              <span className="text-2xl sm:text-3xl font-bold text-gray-900">
                 ₹{product.price ? product.price.toLocaleString() : '0'}
               </span>
               {product.price && (
                 <>
-                  <span className="text-lg text-gray-500 line-through">
+                  <span className="text-base sm:text-lg text-gray-500 line-through">
                     ₹{Math.round(product.price * 1.2).toLocaleString()}
                   </span>
-                  <span className="bg-green-100 text-green-800 px-2 py-1 rounded-full text-sm font-medium">
+                  <span className="bg-green-100 text-green-800 px-2 py-1 rounded-full text-xs sm:text-sm font-medium">
                     Save 17%
                   </span>
                 </>
               )}
             </div>
 
-            {/* Product Options */}
-            <div className="space-y-6">
-              <div className="grid grid-cols-2 gap-4">
+            {/* Product Options - Mobile friendly grid */}
+            <div className="space-y-4 sm:space-y-6">
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4">
                 {product.color && (
                   <div className="space-y-2">
                     <label className="text-sm font-medium text-gray-700">Color</label>
                     <div className="flex items-center gap-2 p-3 bg-gray-50 rounded-xl">
-                      <div className="w-6 h-6 bg-blue-900 rounded-full border-2 border-white shadow-md"></div>
-                      <span className="text-gray-700">{product.color}</span>
+                      <div className="w-5 h-5 sm:w-6 sm:h-6 bg-blue-900 rounded-full border-2 border-white shadow-md"></div>
+                      <span className="text-gray-700 text-sm sm:text-base">{product.color}</span>
                     </div>
                   </div>
                 )}
@@ -243,26 +243,26 @@ const Product = () => {
                   <div className="space-y-2">
                     <label className="text-sm font-medium text-gray-700">Size</label>
                     <div className="p-3 bg-gray-50 rounded-xl">
-                      <span className="text-gray-700">{product.size}</span>
+                      <span className="text-gray-700 text-sm sm:text-base">{product.size}</span>
                     </div>
                   </div>
                 )}
               </div>
 
-              {/* Quantity */}
+              {/* Quantity - Touch friendly buttons */}
               <div className="space-y-2">
                 <label className="text-sm font-medium text-gray-700">Quantity</label>
                 <div className="flex items-center gap-3">
                   <button
                     onClick={() => handleQuantityChange('decrease')}
-                    className="w-10 h-10 rounded-full border border-gray-300 flex items-center justify-center hover:bg-gray-50 transition-colors"
+                    className="w-10 h-10 sm:w-12 sm:h-12 rounded-full border border-gray-300 flex items-center justify-center hover:bg-gray-50 transition-colors touch-manipulation"
                   >
                     <i className="fas fa-minus text-sm"></i>
                   </button>
-                  <span className="w-12 text-center font-medium">{quantity}</span>
+                  <span className="w-12 text-center font-medium text-lg">{quantity}</span>
                   <button
                     onClick={() => handleQuantityChange('increase')}
-                    className="w-10 h-10 rounded-full border border-gray-300 flex items-center justify-center hover:bg-gray-50 transition-colors"
+                    className="w-10 h-10 sm:w-12 sm:h-12 rounded-full border border-gray-300 flex items-center justify-center hover:bg-gray-50 transition-colors touch-manipulation"
                   >
                     <i className="fas fa-plus text-sm"></i>
                   </button>
@@ -270,11 +270,11 @@ const Product = () => {
               </div>
             </div>
 
-            {/* Action Buttons */}
-            <div className="space-y-4">
-              <div className="flex gap-4">
+            {/* Action Buttons - Mobile optimized */}
+            <div className="space-y-3 sm:space-y-4">
+              <div className="flex flex-col sm:flex-row gap-3 sm:gap-4">
                 <button 
-                  className="flex-1 bg-gradient-to-r from-blue-600 to-blue-700 hover:from-blue-700 hover:to-blue-800 text-white font-semibold py-4 px-8 rounded-2xl transition-all duration-300 transform hover:scale-105 shadow-lg hover:shadow-xl flex items-center justify-center gap-2"
+                  className="flex-1 bg-gradient-to-r from-blue-600 to-blue-700 hover:from-blue-700 hover:to-blue-800 text-white font-semibold py-3 sm:py-4 px-6 sm:px-8 rounded-xl sm:rounded-2xl transition-all duration-300 transform hover:scale-105 shadow-lg hover:shadow-xl flex items-center justify-center gap-2 text-sm sm:text-base touch-manipulation"
                   onClick={handleAddToCart}
                 >
                   <i className="fas fa-shopping-cart"></i>
@@ -282,50 +282,53 @@ const Product = () => {
                 </button>
                 <button
                   onClick={() => setIsWishlisted(!isWishlisted)}
-                  className={`w-16 h-16 rounded-2xl border-2 flex items-center justify-center transition-all duration-300 ${
+                  className={`w-full sm:w-14 h-12 sm:h-16 rounded-xl sm:rounded-2xl border-2 flex items-center justify-center transition-all duration-300 touch-manipulation ${
                     isWishlisted 
                       ? 'border-red-500 bg-red-50 text-red-500' 
                       : 'border-gray-300 hover:border-gray-400 text-gray-600'
                   }`}
                 >
-                  <i className={`${isWishlisted ? 'fas' : 'far'} fa-heart text-xl`}></i>
+                  <i className={`${isWishlisted ? 'fas' : 'far'} fa-heart text-lg sm:text-xl`}></i>
+                  <span className="ml-2 sm:hidden text-sm">
+                    {isWishlisted ? 'Remove from Wishlist' : 'Add to Wishlist'}
+                  </span>
                 </button>
               </div>
               
-              <button className="w-full bg-gradient-to-r from-green-600 to-green-700 hover:from-green-700 hover:to-green-800 text-white font-semibold py-4 px-8 rounded-2xl transition-all duration-300 transform hover:scale-105 shadow-lg hover:shadow-xl"
+              <button className="w-full bg-gradient-to-r from-green-600 to-green-700 hover:from-green-700 hover:to-green-800 text-white font-semibold py-3 sm:py-4 px-6 sm:px-8 rounded-xl sm:rounded-2xl transition-all duration-300 transform hover:scale-105 shadow-lg hover:shadow-xl text-sm sm:text-base touch-manipulation"
                 onClick={handleBuy}
               >
                 Buy Now
               </button>
             </div>
 
-            {/* Features */}
-            <div className="grid grid-cols-3 gap-4 pt-6 border-t border-gray-200">
-              <div className="text-center space-y-2">
-                <div className="w-12 h-12 bg-blue-100 rounded-full flex items-center justify-center mx-auto">
-                  <i className="fas fa-truck text-blue-600"></i>
+            {/* Features - Responsive grid */}
+            <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 pt-4 sm:pt-6 border-t border-gray-200">
+              <div className="flex sm:flex-col items-center sm:text-center gap-3 sm:gap-2">
+                <div className="w-10 h-10 sm:w-12 sm:h-12 bg-blue-100 rounded-full flex items-center justify-center flex-shrink-0">
+                  <i className="fas fa-truck text-blue-600 text-sm sm:text-base"></i>
                 </div>
-                <div>
+                <div className="text-left sm:text-center">
                   <p className="font-medium text-gray-900 text-sm">Free Shipping</p>
                   <p className="text-xs text-gray-500">Orders over ₹999</p>
                 </div>
               </div>
               
-              <div className="text-center space-y-2">
-                <div className="w-12 h-12 bg-green-100 rounded-full flex items-center justify-center mx-auto">
-                  <i className="fas fa-shield-alt text-green-600"></i>
+              <div className="flex sm:flex-col items-center sm:text-center gap-3 sm:gap-2">
+                <div className="w-10 h-10 sm:w-12 sm:h-12 bg-green-100 rounded-full flex items-center justify-center flex-shrink-0">
+                  <i className="fas fa-shield-alt text-green-600 text-sm sm:text-base"></i>
                 </div>
-                <div>
+                <div className="text-left sm:text-center">
                   <p className="font-medium text-gray-900 text-sm">Warranty</p>
                   <p className="text-xs text-gray-500">2 year coverage</p>
                 </div>
               </div>
               
-              <div className="text-center space-y-2">
-                <div className="w-12 h-12 bg-orange-100 rounded-full flex items-center justify-center mx-auto">
-                  <i className="fas fa-undo-alt text-orange-600"></i>
+              <div className="flex sm:flex-col items-center sm:text-center gap-3 sm:gap-2">
+                <div className="w-10 h-10 sm:w-12 sm:h-12 bg-orange-100 rounded-full flex items-center justify-center flex-shrink-0">
+                  <i className="fas fa-undo-alt text-orange-600 text-sm sm:text-base"></i>
                 </div>
-                <div>
+                <div className="text-left sm:text-center">
                   <p className="font-medium text-gray-900 text-sm">Easy Returns</p>
                   <p className="text-xs text-gray-500">30 day policy</p>
                 </div>
@@ -334,53 +337,64 @@ const Product = () => {
 
             {/* Description */}
             {product.description && (
-              <div className="space-y-3 pt-6 border-t border-gray-200">
+              <div className="space-y-3 pt-4 sm:pt-6 border-t border-gray-200">
                 <h3 className="font-semibold text-gray-900">Description</h3>
-                <p className="text-gray-600 leading-relaxed">
+                <p className="text-gray-600 leading-relaxed text-sm sm:text-base">
                   {product.description}
                 </p>
               </div>
             )}
 
-            {/* Additional Features */}
-            <div className="bg-gradient-to-r from-purple-50 to-pink-50 p-6 rounded-2xl space-y-4">
-              <h4 className="font-semibold text-gray-900 flex items-center gap-2">
+            {/* Additional Features - Mobile optimized */}
+            <div className="bg-gradient-to-r from-purple-50 to-pink-50 p-4 sm:p-6 rounded-xl sm:rounded-2xl space-y-3 sm:space-y-4">
+              <h4 className="font-semibold text-gray-900 flex items-center gap-2 text-sm sm:text-base">
                 <i className="fas fa-sparkles text-purple-500"></i>
                 Special Features
               </h4>
-              <div className="grid grid-cols-2 gap-3 text-sm">
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 sm:gap-3 text-xs sm:text-sm">
                 <div className="flex items-center gap-2">
-                  <i className="fas fa-check-circle text-green-500"></i>
+                  <i className="fas fa-check-circle text-green-500 flex-shrink-0"></i>
                   <span>Premium Quality</span>
                 </div>
                 <div className="flex items-center gap-2">
-                  <i className="fas fa-check-circle text-green-500"></i>
+                  <i className="fas fa-check-circle text-green-500 flex-shrink-0"></i>
                   <span>Eco-Friendly</span>
                 </div>
                 <div className="flex items-center gap-2">
-                  <i className="fas fa-check-circle text-green-500"></i>
+                  <i className="fas fa-check-circle text-green-500 flex-shrink-0"></i>
                   <span>Handcrafted</span>
                 </div>
                 <div className="flex items-center gap-2">
-                  <i className="fas fa-check-circle text-green-500"></i>
+                  <i className="fas fa-check-circle text-green-500 flex-shrink-0"></i>
                   <span>Limited Edition</span>
                 </div>
               </div>
             </div>
-
-            {/* Back Button */}
-            <div className="pt-6">
-              <button 
-                onClick={() => navigate(-1)}
-                className="flex items-center gap-2 text-blue-600 hover:text-blue-700 font-medium transition-colors"
-              >
-                <i className="fas fa-arrow-left"></i>
-                Back to Products
-              </button>
-            </div>
           </div>
         </div>
       </div>
+
+      {/* Sticky bottom bar for mobile */}
+      <div className="fixed bottom-0 left-0 right-0 bg-white border-t border-gray-200 p-4 sm:hidden">
+        <div className="flex gap-3">
+          <button 
+            className="flex-1 bg-gradient-to-r from-blue-600 to-blue-700 text-white font-semibold py-3 px-4 rounded-xl flex items-center justify-center gap-2 text-sm touch-manipulation"
+            onClick={handleAddToCart}
+          >
+            <i className="fas fa-shopping-cart"></i>
+            Add to Cart
+          </button>
+          <button 
+            className="flex-1 bg-gradient-to-r from-green-600 to-green-700 text-white font-semibold py-3 px-4 rounded-xl text-sm touch-manipulation"
+            onClick={handleBuy}
+          >
+            Buy Now
+          </button>
+        </div>
+      </div>
+
+      {/* Bottom padding for mobile sticky bar */}
+      <div className="h-20 sm:hidden"></div>
     </div>
   );
 };
