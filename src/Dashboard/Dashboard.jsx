@@ -198,7 +198,7 @@ const Dashboard = () => {
       </div>
 
       <div className="px-3 sm:px-5 pb-5 bg-white">
-        <div className="grid grid-cols-1 xs:grid-cols-2 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 2xl:grid-cols-6 gap-3 sm:gap-4 md:gap-6">
+        <div className="grid grid-cols-1 xs:grid-cols-1 sm:grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 2xl:grid-cols-5 gap-3 sm:gap-4 md:gap-6">
           {products.map((item, index) => {
             const inCart = cart.some((cartItem) => cartItem.id === item.id);
 
