@@ -6,7 +6,27 @@ const NavBar = () => {
   const dropdownRef = useRef(null);
   const [isActive, setIsActive] = useState(false);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
-  const name = JSON.parse(localStorage.getItem("logedInUser"));
+  const [userName, setUserName] = useState('');
+  
+  useEffect(() => {
+    try {
+      let user = localStorage.getItem("userAuth");
+      if (user) {
+        const parsedUser = JSON.parse(user);
+        setUserName(parsedUser.username || parsedUser.name || 'User');
+      } else {
+        user = localStorage.getItem("logedInUser");
+        if (user) {
+          const parsedUser = JSON.parse(user);
+          setUserName(parsedUser);
+        }
+      }
+    } catch (error) {
+      console.error("Error parsing user data:", error);
+      localStorage.removeItem("logedInUser");
+      localStorage.removeItem("userAuth");
+    }
+  }, []);
 
   useEffect(() => {
     const handleClickOutside = (event) => {
@@ -20,11 +40,23 @@ const NavBar = () => {
     };
   }, []);
 
-  const Navigate = useNavigate();
+  const navigate = useNavigate();
 
   function logoutHandler() {
-    localStorage.removeItem("logedInUser");
-    Navigate("/Login");
+    try {
+      localStorage.removeItem("userAuth");
+      localStorage.removeItem("logedInUser");
+      
+      setIsActive(false);
+      setIsMobileMenuOpen(false);
+      setUserName('');
+      navigate("/Login", { replace: true });
+      window.location.reload();
+    } catch (error) {
+      console.error("Error during logout:", error);
+      navigate("/Login", { replace: true });
+      window.location.reload();
+    }
   }
 
   return (
@@ -70,7 +102,9 @@ const NavBar = () => {
                 className="dropdown-button flex gap-2 items-center relative"
                 onClick={() => setIsActive(!isActive)}
               >
-                <span className="text-base md:text-xl text-white">{name}</span>
+                <span className="text-base md:text-xl text-white">
+                  {userName || 'User'}
+                </span>
                 <img
                   src={image.downArrow}
                   alt="Dropdown"
@@ -84,14 +118,17 @@ const NavBar = () => {
               {isActive && (
                 <div
                   className="border border-zinc-700 flex items-center p-2 bg-white text-black absolute right-0 top-full mt-1 rounded shadow-lg z-50 min-w-max"
-                  onClick={logoutHandler}
                   style={{
                     transition: "ease-in-out .5s",
                   }}
                 >
-                  <NavLink className="cursor-pointer hover:text-gray-600">
+                  <button
+                    onClick={logoutHandler}
+                    className="cursor-pointer hover:text-gray-600 w-full text-left px-2 py-1 hover:bg-gray-100 rounded transition-colors"
+                  >
+                    <i className="fa-solid fa-sign-out-alt mr-2"></i>
                     Logout
-                  </NavLink>
+                  </button>
                 </div>
               )}
             </div>
@@ -110,7 +147,6 @@ const NavBar = () => {
         {/* Mobile Menu */}
         {isMobileMenuOpen && (
           <div className="md:hidden bg-black border-t border-gray-700">
-            {/* Mobile Search */}
             <div className="p-4 border-b border-gray-700">
               <div className="relative">
                 <input
@@ -132,13 +168,10 @@ const NavBar = () => {
                   className="h-8 w-8"
                   alt="User"
                 />
-                <span className="text-white text-lg">{name}</span>
+                <span className="text-white text-lg">{userName || 'User'}</span>
               </div>
               <button
-                onClick={() => {
-                  logoutHandler();
-                  setIsMobileMenuOpen(false);
-                }}
+                onClick={logoutHandler}
                 className="w-full text-left py-3 px-4 bg-gray-800 text-white rounded hover:bg-gray-700 transition-colors"
               >
                 <i className="fa-solid fa-sign-out-alt mr-2"></i>
