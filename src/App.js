@@ -10,26 +10,71 @@ import Collection from "./AdminDashboard/Collection";
 import Products from "./AdminDashboard/Products";
 import Product from "./Dashboard/Product-details";
 import Cart from "./Dashboard/Cart";
-import Payment from "./Dashboard/Payment";
-import OrdersList from "./Dashboard/OrdersList";
-import Payments from "./Dashboard/Payments";
 
 function App() {
+  const getAuthData = () => {
+    try {
+      const authData = localStorage.getItem("userAuth");
+      return authData ? JSON.parse(authData) : null;
+    } catch (error) {
+      console.error("Error parsing auth data:", error);
+      localStorage.removeItem("userAuth");
+      return null;
+    }
+  };
 
-   const AuthRoute = ({ children }) => {
-     const login = localStorage.getItem("logedInUser");
-     return !login ? children : <Navigate to="/dashboard" />;
-   };
+  // Check if user is logged in
+  const isLoggedIn = () => {
+    const authData = getAuthData();
+    return authData !== null && authData.isLoggedIn === true;
+  };
 
-   const ProtectedRoute = ({ children }) => {
-     const login = localStorage.getItem("logedInUser");
-     return login ? children : <Navigate to="/Login" />;
-   };
+  // Check if user is admin
+  const isAdmin = () => {
+    const authData = getAuthData();
+    return authData && authData.role === 'admin';
+  };
+
+  // Auth Route - Only for non-logged in users (prevents logged in users from accessing login/register)
+  const AuthRoute = ({ children }) => {
+    if (!isLoggedIn()) {
+      return children;
+    }
+    
+    // If already logged in, redirect based on role
+    return isAdmin() ? <Navigate to="/admindashboard" replace /> : <Navigate to="/dashboard" replace />;
+  };
+
+  // Admin Route - Only for admin users
+  const AdminRoute = ({ children }) => {
+    if (!isLoggedIn()) {
+      return <Navigate to="/Login" replace />;
+    }
+    
+    if (!isAdmin()) {
+      return <Navigate to="/dashboard" replace />;
+    }
+    
+    return children;
+  };
+
+  // User Route - Only for regular users (non-admin)
+  const UserRoute = ({ children }) => {
+    if (!isLoggedIn()) {
+      return <Navigate to="/Login" replace />;
+    }
+    
+    if (isAdmin()) {
+      return <Navigate to="/admindashboard" replace />;
+    }
+    
+    return children;
+  };
 
   return (
     <div>
-       {/* <Button text={'Submit'} onClick={handleChange} style={{backgroundColor : name ? "red" : "blue", border: '1px solid red'}} name={name} /> */}
       <Routes>
+        {/* Public routes - only accessible when not logged in */}
         <Route
           path="/"
           element={
@@ -46,33 +91,87 @@ function App() {
             </AuthRoute>
           }
         />
+
+        {/* User-only routes - admin cannot access these */}
         <Route
           path="/dashboard"
           element={
-            <ProtectedRoute>
+            <UserRoute>
               <Dashboard />
-            </ProtectedRoute>
+            </UserRoute>
           }
         />
         <Route
-          path="/admindashboard"
+          path="/product-detail/:id?"
           element={
-            <ProtectedRoute>
-              <AdminDashboard />
-              </ProtectedRoute>
+            <UserRoute>
+              <Product />
+            </UserRoute>
           }
         />
-      <Route path="/brand" element={<Brand />} />
-      <Route path="/partners" element={<Partners />} />
-      <Route path="/collection" element={<Collection />} />
-      <Route path="/products" element={<Products />} />
-      <Route path="/product-detail" element={<Product />} />
-      <Route path="/cart" element={<Cart />} />
-      <Route path="/payment" element={<Payment />}/>
-      <Route path="/order" element={<OrdersList />}/>
-      <Route path="/payments" element={<Payments />}/>
-      </Routes>
+        <Route
+          path="/cart"
+          element={
+            <UserRoute>
+              <Cart />
+            </UserRoute>
+          }
+        />
 
+        {/* Admin-only routes - regular users cannot access these */}
+        <Route
+          path="/admindashboard"
+          element={
+            <AdminRoute>
+              <AdminDashboard />
+            </AdminRoute>
+          }
+        />
+        <Route
+          path="/brand"
+          element={
+            <AdminRoute>
+              <Brand />
+            </AdminRoute>
+          }
+        />
+        <Route
+          path="/partners"
+          element={
+            <AdminRoute>
+              <Partners />
+            </AdminRoute>
+          }
+        />
+        <Route
+          path="/collection"
+          element={
+            <AdminRoute>
+              <Collection />
+            </AdminRoute>
+          }
+        />
+        <Route
+          path="/products"
+          element={
+            <AdminRoute>
+              <Products />
+            </AdminRoute>
+          }
+        />
+
+        {/* Catch all route - redirect based on authentication and role */}
+        <Route
+          path="*"
+          element={
+            isLoggedIn() ? (
+              isAdmin() ? <Navigate to="/admindashboard" replace /> : <Navigate to="/dashboard" replace />
+            ) : (
+              <Navigate to="/Login" replace />
+            )
+          }
+        />
+      </Routes>
     </div>
   );
 }
