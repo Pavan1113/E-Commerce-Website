@@ -154,29 +154,6 @@ const AdminDashboard = () => {
               </div>
             </div>
           </div>
-
-          {/* Additional Quick Actions - Optional */}
-          <div className="mt-4 sm:mt-6 bg-white rounded-lg shadow-md p-4 sm:p-6">
-            <h3 className="text-lg sm:text-xl font-semibold text-gray-800 mb-4">Quick Actions</h3>
-            <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 sm:gap-4">
-              <button className="flex flex-col items-center gap-2 p-3 sm:p-4 rounded-lg bg-blue-50 hover:bg-blue-100 transition-colors">
-                <i className="fa-solid fa-plus text-blue-600 text-lg sm:text-xl"></i>
-                <span className="text-xs sm:text-sm font-medium text-blue-700">Add Product</span>
-              </button>
-              <button className="flex flex-col items-center gap-2 p-3 sm:p-4 rounded-lg bg-green-50 hover:bg-green-100 transition-colors">
-                <i className="fa-solid fa-eye text-green-600 text-lg sm:text-xl"></i>
-                <span className="text-xs sm:text-sm font-medium text-green-700">View Orders</span>
-              </button>
-              <button className="flex flex-col items-center gap-2 p-3 sm:p-4 rounded-lg bg-yellow-50 hover:bg-yellow-100 transition-colors">
-                <i className="fa-solid fa-chart-bar text-yellow-600 text-lg sm:text-xl"></i>
-                <span className="text-xs sm:text-sm font-medium text-yellow-700">Analytics</span>
-              </button>
-              <button className="flex flex-col items-center gap-2 p-3 sm:p-4 rounded-lg bg-purple-50 hover:bg-purple-100 transition-colors">
-                <i className="fa-solid fa-cogs text-purple-600 text-lg sm:text-xl"></i>
-                <span className="text-xs sm:text-sm font-medium text-purple-700">Settings</span>
-              </button>
-            </div>
-          </div>
         </div>
       </div>
     </div>
