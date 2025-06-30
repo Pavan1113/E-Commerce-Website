@@ -1,11 +1,12 @@
 import React, { useEffect, useState } from "react";
+import { Link } from 'react-router-dom';
 
 const Cart = () => {
   const initializeCartItems = () => {
     const cart = JSON.parse(localStorage.getItem("cart")) || [];
     return cart.map((item) => ({
       ...item,
-      quantity: item.quantity || 1, // Set default quantity to 1 if not present
+      quantity: item.quantity || 1,
     }));
   };
 
@@ -17,7 +18,7 @@ const Cart = () => {
   );
 
   // Purchase mode tracking
-  const [purchaseMode, setPurchaseMode] = useState("all"); // "all", "selected", "single"
+  const [purchaseMode, setPurchaseMode] = useState("all");
   const [checkoutItems, setCheckoutItems] = useState([]);
 
   useEffect(() => {
@@ -52,7 +53,6 @@ const Cart = () => {
     const selectedProducts = cartItems.filter((item) =>
       selectedItems.includes(item.id)
     );
-
     setPurchaseMode("selected");
     setCheckoutItems(selectedProducts);
     setActiveTab("cartTab2");
@@ -63,7 +63,6 @@ const Cart = () => {
     const newItems = cartItems.filter((_, i) => i !== index);
     setCartItems(newItems);
 
-    // Remove from selected items if it was selected
     const removedItemId = cartItems[index].id;
     setSelectedItems((prev) => prev.filter((id) => id !== removedItemId));
   };
@@ -128,10 +127,7 @@ const Cart = () => {
     setActiveTab("cartTab2");
   };
 
-  // Generate order number
   const orderNumber = Math.floor(Math.random() * 100000);
-
-  // Format current date
   const currentDate = new Date();
   const formatDate = (date) => {
     const day = String(date.getDate()).padStart(2, "0");
@@ -143,25 +139,33 @@ const Cart = () => {
   return (
     <div className="min-h-screen bg-gray-50 p-2 sm:p-4">
       <div className="max-w-7xl mx-auto">
-        {/* Back Navigation */}
         <div className="mb-4 sm:mb-6 px-2 sm:px-4">
-          <a 
-            href="/" 
+          <Link
+            to="/dashboard"
             className="inline-flex items-center text-blue-600 hover:text-blue-800 transition-colors group"
           >
-            <svg 
-              className="w-4 h-4 sm:w-5 sm:h-5 mr-2 transform group-hover:-translate-x-1 transition-transform" 
-              fill="none" 
-              stroke="currentColor" 
+            <svg
+              className="w-4 h-4 sm:w-5 sm:h-5 mr-2 transform group-hover:-translate-x-1 transition-transform"
+              fill="none"
+              stroke="currentColor"
               viewBox="0 0 24 24"
             >
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                strokeWidth={2}
+                d="M15 19l-7-7 7-7"
+              />
             </svg>
-            <span className="text-sm sm:text-base font-medium">Back to Shopping</span>
-          </a>
+            <span className="text-sm sm:text-base font-medium">
+              Back to Shopping
+            </span>
+          </Link>
         </div>
-        
-        <h1 className="text-2xl sm:text-3xl font-bold text-center mb-6 sm:mb-8 px-4">Shopping Cart</h1>
+
+        <h1 className="text-2xl sm:text-3xl font-bold text-center mb-6 sm:mb-8 px-4">
+          Shopping Cart
+        </h1>
 
         {/* Tab Navigation - Mobile Optimized */}
         <div className="flex flex-col sm:flex-row justify-center mb-6 sm:mb-8 space-y-2 sm:space-y-0 sm:space-x-2 lg:space-x-4 px-2">
@@ -178,8 +182,12 @@ const Cart = () => {
                 01
               </div>
               <div className="text-left">
-                <h3 className="font-semibold text-sm sm:text-base">Shopping Bag</h3>
-                <p className="text-xs sm:text-sm opacity-75 hidden sm:block">Manage Your Items List</p>
+                <h3 className="font-semibold text-sm sm:text-base">
+                  Shopping Bag
+                </h3>
+                <p className="text-xs sm:text-sm opacity-75 hidden sm:block">
+                  Manage Your Items List
+                </p>
               </div>
             </div>
           </button>
@@ -197,8 +205,12 @@ const Cart = () => {
                 02
               </div>
               <div className="text-left">
-                <h3 className="font-semibold text-sm sm:text-base">Shipping and Checkout</h3>
-                <p className="text-xs sm:text-sm opacity-75 hidden sm:block">Checkout Your Items List</p>
+                <h3 className="font-semibold text-sm sm:text-base">
+                  Shipping and Checkout
+                </h3>
+                <p className="text-xs sm:text-sm opacity-75 hidden sm:block">
+                  Checkout Your Items List
+                </p>
               </div>
             </div>
           </button>
@@ -216,7 +228,9 @@ const Cart = () => {
                 03
               </div>
               <div className="text-left">
-                <h3 className="font-semibold text-sm sm:text-base">Confirmation</h3>
+                <h3 className="font-semibold text-sm sm:text-base">
+                  Confirmation
+                </h3>
                 <p className="text-xs sm:text-sm opacity-75 hidden sm:block">
                   Review And Submit Your Order
                 </p>
@@ -235,8 +249,12 @@ const Cart = () => {
                   <div className="border border-gray-200 rounded-lg">
                     <div className="p-4 sm:p-6 border-b">
                       <div className="flex justify-between items-center">
-                        <h2 className="text-xl sm:text-2xl font-semibold">Shopping Cart</h2>
-                        <span className="text-gray-600 text-sm sm:text-base">Price</span>
+                        <h2 className="text-xl sm:text-2xl font-semibold">
+                          Shopping Cart
+                        </h2>
+                        <span className="text-gray-600 text-sm sm:text-base">
+                          Price
+                        </span>
                       </div>
                     </div>
 
@@ -529,7 +547,9 @@ const Cart = () => {
                 </div>
 
                 <div>
-                  <h3 className="text-lg sm:text-xl font-semibold mb-4 sm:mb-6">Your Order</h3>
+                  <h3 className="text-lg sm:text-xl font-semibold mb-4 sm:mb-6">
+                    Your Order
+                  </h3>
                   <div className="bg-gray-50 p-4 sm:p-6 rounded-lg space-y-4">
                     <div className="space-y-2">
                       <div className="mb-2 text-sm text-gray-600">
@@ -539,9 +559,13 @@ const Cart = () => {
                         {purchaseMode === "all" && "All Cart Items"}
                       </div>
                       {checkoutItems.map((item) => (
-                        <div key={item.id} className="flex justify-between items-start gap-2">
+                        <div
+                          key={item.id}
+                          className="flex justify-between items-start gap-2"
+                        >
                           <span className="flex-1 text-sm sm:text-base line-clamp-2">
-                            {item.title || item.brandname} x {item.quantity || 1}
+                            {item.title || item.brandname} x{" "}
+                            {item.quantity || 1}
                           </span>
                           <span className="font-medium whitespace-nowrap">
                             ₹{(item.price * (item.quantity || 1)).toFixed(2)}
@@ -637,30 +661,51 @@ const Cart = () => {
 
                 <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 mb-6 sm:mb-8">
                   <div className="text-center">
-                    <p className="text-gray-500 text-xs sm:text-sm mb-1">Order Number</p>
-                    <h4 className="font-semibold text-sm sm:text-base">{orderNumber}</h4>
+                    <p className="text-gray-500 text-xs sm:text-sm mb-1">
+                      Order Number
+                    </p>
+                    <h4 className="font-semibold text-sm sm:text-base">
+                      {orderNumber}
+                    </h4>
                   </div>
                   <div className="text-center">
-                    <p className="text-gray-500 text-xs sm:text-sm mb-1">Date</p>
-                    <h4 className="font-semibold text-sm sm:text-base">{formatDate(currentDate)}</h4>
+                    <p className="text-gray-500 text-xs sm:text-sm mb-1">
+                      Date
+                    </p>
+                    <h4 className="font-semibold text-sm sm:text-base">
+                      {formatDate(currentDate)}
+                    </h4>
                   </div>
                   <div className="text-center">
-                    <p className="text-gray-500 text-xs sm:text-sm mb-1">Total</p>
-                    <h4 className="font-semibold text-sm sm:text-base">₹{total.toFixed(2)}</h4>
+                    <p className="text-gray-500 text-xs sm:text-sm mb-1">
+                      Total
+                    </p>
+                    <h4 className="font-semibold text-sm sm:text-base">
+                      ₹{total.toFixed(2)}
+                    </h4>
                   </div>
                   <div className="text-center">
-                    <p className="text-gray-500 text-xs sm:text-sm mb-1">Payment Method</p>
-                    <h4 className="font-semibold text-sm sm:text-base">{selectedPayment}</h4>
+                    <p className="text-gray-500 text-xs sm:text-sm mb-1">
+                      Payment Method
+                    </p>
+                    <h4 className="font-semibold text-sm sm:text-base">
+                      {selectedPayment}
+                    </h4>
                   </div>
                 </div>
 
                 <div className="bg-gray-50 p-4 sm:p-6 rounded-lg">
-                  <h3 className="text-lg sm:text-xl font-semibold mb-4">Order Details</h3>
+                  <h3 className="text-lg sm:text-xl font-semibold mb-4">
+                    Order Details
+                  </h3>
                   <div className="space-y-2">
                     {checkoutItems.map((item) => {
                       console.log(checkoutItems);
                       return (
-                        <div key={item.id} className="flex justify-between items-start gap-2">
+                        <div
+                          key={item.id}
+                          className="flex justify-between items-start gap-2"
+                        >
                           <span className="flex-1 text-left text-sm sm:text-base">
                             {item.title} x {item.quantity || 1}
                           </span>
