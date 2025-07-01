@@ -1,42 +1,7 @@
 import React, { useEffect, useState, useRef, useCallback, useMemo } from "react";
 import NavBar from "./NavBar";
 import Leftsidebar from "./Leftsidebar";
-import { image } from "../images";
 
-// Memoized BrandDropdown component
-const BrandDropdown = React.memo(({ isOpen, onEdit, onDelete, onClose, dropdownRef }) => {
-  if (!isOpen) return null;
-  
-  return (
-    <div 
-      ref={dropdownRef} 
-      className="absolute right-0 top-full mt-1 bg-white rounded-lg shadow-lg z-20 py-1 min-w-32 md:min-w-44 border border-gray-200 animate-dropdown"
-    >
-      <button
-        onClick={onEdit}
-        className="flex items-center gap-2 md:gap-3 px-3 md:px-4 py-2 md:py-3 text-gray-700 hover:bg-blue-50 w-full text-left transition-colors group text-sm md:text-base"
-        aria-label="Edit brand"
-      >
-        <div className="w-6 h-6 md:w-8 md:h-8 rounded-full bg-blue-100 flex items-center justify-center group-hover:bg-blue-200 transition-colors">
-          <i className="fa-solid fa-pen-to-square text-blue-500 text-xs md:text-sm"></i>
-        </div>
-        <span className="font-medium">Edit</span>
-      </button>
-      <button
-        onClick={onDelete}
-        className="flex items-center gap-2 md:gap-3 px-3 md:px-4 py-2 md:py-3 text-gray-700 hover:bg-red-50 w-full text-left transition-colors group text-sm md:text-base"
-        aria-label="Delete brand"
-      >
-        <div className="w-6 h-6 md:w-8 md:h-8 rounded-full bg-red-100 flex items-center justify-center group-hover:bg-red-200 transition-colors">
-          <i className="fa-solid fa-trash text-red-500 text-xs md:text-sm"></i>
-        </div>
-        <span className="font-medium">Delete</span>
-      </button>
-    </div>
-  );
-});
-
-// Memoized BrandModal component
 const BrandModal = React.memo(({ isOpen, brand, onClose, onSave, isEditing }) => {
   const [formData, setFormData] = useState({ name: "" });
   const modalRef = useRef(null);
@@ -142,7 +107,6 @@ const BrandModal = React.memo(({ isOpen, brand, onClose, onSave, isEditing }) =>
   );
 });
 
-// Memoized EmptyState component
 const EmptyState = React.memo(({ onAddBrand }) => (
   <div className="text-center py-8 md:py-12 px-4">
     <div className="mb-4">
@@ -161,10 +125,9 @@ const EmptyState = React.memo(({ onAddBrand }) => (
   </div>
 ));
 
-// Memoized BrandRow component
-const BrandRow = React.memo(({ brand, originalIndex, isAnimating, animationType, onToggleDropdown, isDropdownOpen, dropdownRef, onEdit, onDelete }) => (
+const BrandRow = React.memo(({ brand, originalIndex, isAnimating, animationType, onEdit, onDelete }) => (
   <tr 
-    className={`border-b border-gray-200 relative ${
+    className={`border-b border-gray-200 ${
       isAnimating && animationType === 'delete' 
         ? 'animate-slide-out-right opacity-0' 
         : isAnimating && animationType === 'update'
@@ -172,86 +135,80 @@ const BrandRow = React.memo(({ brand, originalIndex, isAnimating, animationType,
         : 'hover:bg-gray-50'
     } transition-all duration-300`}
   >
-    <td className="px-3 md:px-6 py-3 w-3/4">
-      <div className="truncate max-w-full text-sm md:text-base" title={brand.name}>
+    <td className="px-3 md:px-6 py-4 w-1/2">
+      <div className="truncate max-w-full text-sm md:text-base font-medium text-gray-800" title={brand.name}>
         {brand.name}
       </div>
     </td>
-    <td className="px-3 md:px-6 py-3 w-1/4">
-      <div className="flex justify-center">
-        <div className="relative" ref={isDropdownOpen ? dropdownRef : null}>
-          <button
-            onClick={(e) => onToggleDropdown(e)}
-            className="hover:bg-gray-100 rounded-full p-1 transition-colors"
-            aria-label="More options"
-            aria-expanded={isDropdownOpen}
-          >
-            <i className="fa-solid fa-ellipsis-vertical text-gray-500 text-sm md:text-base"></i>
-          </button>
-          
-          <BrandDropdown 
-            isOpen={isDropdownOpen}
-            onEdit={() => onEdit(brand, originalIndex)}
-            onDelete={() => onDelete(originalIndex)}
-            onClose={() => onToggleDropdown()}
-            dropdownRef={dropdownRef}
-          />
-        </div>
+    <td className="px-3 md:px-6 py-4 w-1/2">
+      <div className="flex justify-center gap-3">
+        <button
+          onClick={() => onEdit(brand, originalIndex)}
+          className="inline-flex items-center px-3 py-2 border border-blue-300 bg-blue-50 text-blue-700 text-sm font-medium rounded-md hover:bg-blue-100 hover:border-blue-400 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-1 transition-all duration-200 shadow-sm"
+          aria-label="Edit brand"
+        >
+          <i className="fa-solid fa-pen-to-square text-xs mr-1.5"></i>
+          <span className="hidden sm:inline">Edit</span>
+        </button>
+        
+        <button
+          onClick={() => onDelete(originalIndex)}
+          className="inline-flex items-center px-3 py-2 border border-red-300 bg-red-50 text-red-700 text-sm font-medium rounded-md hover:bg-red-100 hover:border-red-400 focus:outline-none focus:ring-2 focus:ring-red-500 focus:ring-offset-1 transition-all duration-200 shadow-sm"
+          aria-label="Delete brand"
+        >
+          <i className="fa-solid fa-trash text-xs mr-1.5"></i>
+          <span className="hidden sm:inline">Delete</span>
+        </button>
       </div>
     </td>
   </tr>
 ));
 
-// Memoized BrandCard component
-const BrandCard = React.memo(({ brand, originalIndex, isAnimating, animationType, onToggleDropdown, isDropdownOpen, dropdownRef, onEdit, onDelete }) => (
+const BrandCard = React.memo(({ brand, originalIndex, isAnimating, animationType, onEdit, onDelete }) => (
   <div 
-    className={`bg-white border border-gray-200 rounded-lg p-4 mb-3 ${
+    className={`bg-white border border-gray-200 rounded-lg p-4 mb-3 shadow-sm ${
       isAnimating && animationType === 'delete' 
         ? 'animate-slide-out-right opacity-0' 
         : isAnimating && animationType === 'update'
         ? 'animate-pulse bg-blue-50'
-        : ''
+        : 'hover:shadow-md'
     } transition-all duration-300`}
   >
     <div className="flex justify-between items-center">
-      <div className="flex-1 mr-3">
-        <h3 className="font-medium text-gray-800 truncate" title={brand.name}>
+      <div className="flex-1 mr-4">
+        <h3 className="font-semibold text-gray-800 truncate text-base" title={brand.name}>
           {brand.name}
         </h3>
       </div>
-      <div className="relative" ref={isDropdownOpen ? dropdownRef : null}>
+      <div className="flex gap-2">
         <button
-          onClick={(e) => onToggleDropdown(e)}
-          className="hover:bg-gray-100 rounded-full p-2 transition-colors"
-          aria-label="More options"
-          aria-expanded={isDropdownOpen}
+          onClick={() => onEdit(brand, originalIndex)}
+          className="inline-flex items-center px-3 py-2 border border-blue-300 bg-blue-50 text-blue-700 text-sm font-medium rounded-md hover:bg-blue-100 hover:border-blue-400 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-1 transition-all duration-200 shadow-sm"
+          aria-label="Edit brand"
         >
-          <i className="fa-solid fa-ellipsis-vertical text-gray-500 text-base"></i>
+          <i className="fa-solid fa-pen-to-square text-xs mr-1.5"></i>
+          <span>Edit</span>
         </button>
         
-        <BrandDropdown 
-          isOpen={isDropdownOpen}
-          onEdit={() => onEdit(brand, originalIndex)}
-          onDelete={() => onDelete(originalIndex)}
-          onClose={() => onToggleDropdown()}
-          dropdownRef={dropdownRef}
-        />
+        <button
+          onClick={() => onDelete(originalIndex)}
+          className="inline-flex items-center px-3 py-2 border border-red-300 bg-red-50 text-red-700 text-sm font-medium rounded-md hover:bg-red-100 hover:border-red-400 focus:outline-none focus:ring-2 focus:ring-red-500 focus:ring-offset-1 transition-all duration-200 shadow-sm"
+          aria-label="Delete brand"
+        >
+          <i className="fa-solid fa-trash text-xs mr-1.5"></i>
+          <span>Delete</span>
+        </button>
       </div>
     </div>
   </div>
 ));
 
 const Brand = () => {
-  const [brands, setBrands] = useState([
-    { name: "Nike" },
-    { name: "Adidas" },
-    { name: "Puma" },
-    { name: "Reebok" },
-    { name: "Under Armour" }
-  ]);
+  const [brands, setBrands] = useState(() => {
+    return JSON.parse(localStorage.getItem("brand")) || [];
+  });
   
   const [isModalOpen, setIsModalOpen] = useState(false);
-  const [activeDropdownIndex, setActiveDropdownIndex] = useState(null);
   const [currentBrand, setCurrentBrand] = useState(null);
   const [editIndex, setEditIndex] = useState(null);
   const [animation, setAnimation] = useState({ index: null, type: null });
@@ -260,8 +217,11 @@ const Brand = () => {
   const [isMobile, setIsMobile] = useState(false);
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
   
-  const dropdownRef = useRef(null);
   const tableRef = useRef(null);
+
+  useEffect(() => {
+    localStorage.setItem("brand", JSON.stringify(brands));
+  }, [brands]);
 
   useEffect(() => {
     const checkScreenSize = () => {
@@ -285,24 +245,10 @@ const Brand = () => {
     setIsSidebarOpen(false);
   }, []);
 
-  useEffect(() => {
-    const handleClickOutside = (event) => {
-      if (dropdownRef.current && !dropdownRef.current.contains(event.target)) {
-        setActiveDropdownIndex(null);
-      }
-    };
-    
-    document.addEventListener('mousedown', handleClickOutside);
-    return () => {
-      document.removeEventListener('mousedown', handleClickOutside);
-    };
-  }, []);
-
   const openModal = useCallback((brandToEdit = null, index = null) => {
     setCurrentBrand(brandToEdit);
     setEditIndex(index);
     setIsModalOpen(true);
-    setActiveDropdownIndex(null);
   }, []);
 
   const closeModal = useCallback(() => {
@@ -338,14 +284,8 @@ const Brand = () => {
     
     setTimeout(() => {
       setBrands(prev => prev.filter((_, i) => i !== index));
-      setActiveDropdownIndex(null);
       setAnimation({ index: null, type: null });
     }, 500);
-  }, []);
-
-  const toggleDropdown = useCallback((index, e) => {
-    if (e) e.stopPropagation();
-    setActiveDropdownIndex(prev => prev === index ? null : index);
   }, []);
 
   const filteredAndSortedBrands = useMemo(() => {
@@ -375,10 +315,11 @@ const Brand = () => {
   return (
     <>
     <div className="min-h-screen bg-gray-100/10">
-      <NavBar />
+      <div className="flex flex-col sticky top-0 z-50">
+        <NavBar />
+      </div>
       
       <div className="flex flex-col lg:flex-row gap-2 p-2 sm:p-3 lg:p-4">
-        {/* Mobile Sidebar Toggle Button */}
         <button
           onClick={toggleSidebar}
           className="lg:hidden bg-white p-3 sm:p-4 rounded-lg shadow-md mb-2 flex items-center gap-2 hover:bg-gray-50 transition-colors active:scale-95"
@@ -418,47 +359,46 @@ const Brand = () => {
         {/* Main Content Area */}
         <div className="flex-1 w-full lg:w-auto min-w-0">
           <div className="bg-white rounded-xl lg:rounded-2xl min-h-[calc(100vh-6rem)] shadow-lg">
-            {/* Header with Add Brand button and search */}
-            <div className="p-4 md:p-6 flex flex-col space-y-4 lg:flex-row lg:justify-between lg:items-center lg:space-y-0 border-b border-gray-200">
-              <h1 className="text-xl md:text-2xl font-semibold text-gray-800">Brand Management</h1>
-              
-              <div className="flex flex-col sm:flex-row gap-3 lg:gap-4 w-full lg:w-auto">
-                {/* Search box */}
-                <div className="relative w-full sm:flex-1 lg:w-64">
-                  <input
-                    type="text"
-                    placeholder="Search brands..."
-                    value={searchTerm}
-                    onChange={(e) => setSearchTerm(e.target.value)}
-                    className="w-full px-3 md:px-4 py-2 pl-8 md:pl-10 pr-8 md:pr-10 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition-all text-sm md:text-base"
-                    aria-label="Search brands"
-                  />
-                  <div className="absolute left-2 md:left-3 top-1/2 transform -translate-y-1/2 text-gray-400">
-                    <i className="fa-solid fa-search text-sm"></i>
-                  </div>
-                  {searchTerm && (
-                    <button 
-                      onClick={() => setSearchTerm("")}
-                      className="absolute right-2 md:right-3 top-1/2 transform -translate-y-1/2 text-gray-400 hover:text-gray-600"
-                      aria-label="Clear search"
-                    >
-                      <i className="fa-solid fa-times text-sm"></i>
-                    </button>
-                  )}
-                </div>
+            {brands.length > 0 && (
+              <div className="p-4 md:p-6 flex flex-col space-y-4 lg:flex-row lg:justify-between lg:items-center lg:space-y-0 border-b border-gray-200">
+                <h1 className="text-xl md:text-2xl font-semibold text-gray-800">Brand Management</h1>
                 
-                {/* Add brand button */}
-                <button
-                  onClick={() => openModal()}
-                  className="flex items-center justify-center gap-2 px-4 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600 transition-colors w-full sm:w-auto text-sm md:text-base"
-                  aria-label="Add new brand"
-                >
-                  <i className="fa-solid fa-plus"></i>
-                  <span className="hidden sm:inline">Add Brand</span>
-                  <span className="sm:hidden">Add</span>
-                </button>
+                <div className="flex flex-col sm:flex-row gap-3 lg:gap-4 w-full lg:w-auto">
+                  <div className="relative w-full sm:flex-1 lg:w-64">
+                    <input
+                      type="text"
+                      placeholder="Search brands..."
+                      value={searchTerm}
+                      onChange={(e) => setSearchTerm(e.target.value)}
+                      className="w-full px-3 md:px-4 py-2 pl-8 md:pl-10 pr-8 md:pr-10 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition-all text-sm md:text-base"
+                      aria-label="Search brands"
+                    />
+                    <div className="absolute left-2 md:left-3 top-1/2 transform -translate-y-1/2 text-gray-400">
+                      <i className="fa-solid fa-search text-sm"></i>
+                    </div>
+                    {searchTerm && (
+                      <button 
+                        onClick={() => setSearchTerm("")}
+                        className="absolute right-2 md:right-3 top-1/2 transform -translate-y-1/2 text-gray-400 hover:text-gray-600"
+                        aria-label="Clear search"
+                      >
+                        <i className="fa-solid fa-times text-sm"></i>
+                      </button>
+                    )}
+                  </div>
+                  
+                  <button
+                    onClick={() => openModal()}
+                    className="flex items-center justify-center gap-2 px-4 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600 transition-colors w-full sm:w-auto text-sm md:text-base shadow-sm"
+                    aria-label="Add new brand"
+                  >
+                    <i className="fa-solid fa-plus"></i>
+                    <span className="hidden sm:inline">Add Brand</span>
+                    <span className="sm:hidden">Add</span>
+                  </button>
+                </div>
               </div>
-            </div>
+            )}
 
             {/* Content area */}
             <div className="py-2 px-4 md:px-6">
@@ -478,21 +418,18 @@ const Brand = () => {
                 ) : null
               ) : (
                 <div className="overflow-hidden flex flex-col">
-                  {/* Desktop Table View */}
                   <div className="hidden md:block">
-                    {/* Fixed table header */}
                     <table className="w-full border-collapse">
                       <thead>
                         <tr className="bg-gray-50 border-b border-gray-200">
-                          <th className="px-6 py-3 text-left font-semibold text-gray-700 w-3/4 text-sm md:text-base">
+                          <th className="px-6 py-4 text-left font-semibold text-gray-700 w-1/2 text-sm md:text-base">
                             Brand Name
                           </th>
-                          <th className="px-6 py-3 text-center font-semibold text-gray-700 w-1/4 text-sm md:text-base">Actions</th>
+                          <th className="px-6 py-4 text-center font-semibold text-gray-700 w-1/2 text-sm md:text-base">Actions</th>
                         </tr>
                       </thead>
                     </table>
                     
-                    {/* Scrollable table body */}
                     <div 
                       ref={tableRef}
                       className="overflow-y-auto overflow-x-hidden scrollbar-thin max-h-96"
@@ -508,9 +445,6 @@ const Brand = () => {
                                 originalIndex={originalIndex}
                                 isAnimating={animation.index === originalIndex}
                                 animationType={animation.type}
-                                onToggleDropdown={(e) => toggleDropdown(originalIndex, e)}
-                                isDropdownOpen={activeDropdownIndex === originalIndex}
-                                dropdownRef={dropdownRef}
                                 onEdit={openModal}
                                 onDelete={deleteBrand}
                               />
@@ -533,9 +467,6 @@ const Brand = () => {
                             originalIndex={originalIndex}
                             isAnimating={animation.index === originalIndex}
                             animationType={animation.type}
-                            onToggleDropdown={(e) => toggleDropdown(originalIndex, e)}
-                            isDropdownOpen={activeDropdownIndex === originalIndex}
-                            dropdownRef={dropdownRef}
                             onEdit={openModal}
                             onDelete={deleteBrand}
                           />
@@ -544,7 +475,6 @@ const Brand = () => {
                     </div>
                   </div>
                   
-                  {/* Brand count */}
                   <div className="flex justify-between items-center py-3 px-4 md:px-6 border-t border-gray-200 text-xs md:text-sm text-gray-500">
                     <div>
                       {searchTerm 
@@ -560,7 +490,6 @@ const Brand = () => {
         </div>
       </div>
 
-      {/* Modal for adding/editing brand */}
       <BrandModal
         isOpen={isModalOpen}
         brand={currentBrand}
@@ -586,11 +515,6 @@ const Brand = () => {
           to { transform: scale(1); opacity: 1; }
         }
         
-        @keyframes dropdown-appear {
-          from { transform: translateY(-10px); opacity: 0; }
-          to { transform: translateY(0); opacity: 1; }
-        }
-        
         .animate-slide-out-right {
           animation: slide-out-right 0.5s ease-out forwards;
         }
@@ -603,27 +527,10 @@ const Brand = () => {
           animation: scale-in 0.3s ease-out forwards;
         }
         
-        .animate-dropdown {
-          animation: dropdown-appear 0.25s ease-out forwards;
-        }
-        
         /* Custom scrollbar styling */
         .scrollbar-thin::-webkit-scrollbar {
           width: 4px;
-        }
-        
-        .scrollbar-thin::-webkit-scrollbar-track {
-          background: #f1f5f9;
-          border-radius: 10px;
-        }
-        
-        .scrollbar-thin::-webkit-scrollbar-thumb {
-          background: #cbd5e1;
-          border-radius: 10px;
-        }
-        
-        .scrollbar-thin::-webkit-scrollbar-thumb:hover {
-          background: #94a3b8;
+          overflow-y: hidden;
         }
 
         /* Responsive breakpoints adjustments */
