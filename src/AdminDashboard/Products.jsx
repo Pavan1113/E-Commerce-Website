@@ -230,7 +230,6 @@ const ProductModal = ({ isOpen, product, onClose, onSave, isEditing }) => {
           onSubmit={handleSubmit}
           className="p-4 sm:p-6 max-h-[80vh] overflow-y-auto"
         >
-          {/* Brand Name */}
           <div className="mb-4">
             <label
               htmlFor="brandSelect"
@@ -258,7 +257,6 @@ const ProductModal = ({ isOpen, product, onClose, onSave, isEditing }) => {
             </select>
           </div>
 
-          {/* Partners Name */}
           <div className="mb-4">
             <label
               htmlFor="partnerSelect"
@@ -285,7 +283,6 @@ const ProductModal = ({ isOpen, product, onClose, onSave, isEditing }) => {
             </select>
           </div>
 
-          {/* Collection Name */}
           <div className="mb-4">
             <label
               htmlFor="collectionSelect"
@@ -312,7 +309,6 @@ const ProductModal = ({ isOpen, product, onClose, onSave, isEditing }) => {
             </select>
           </div>
 
-          {/* Product Name */}
           <div className="mb-4">
             <label
               htmlFor="productName"
@@ -335,7 +331,6 @@ const ProductModal = ({ isOpen, product, onClose, onSave, isEditing }) => {
             />
           </div>
 
-          {/* Color */}
           <div className="mb-4">
             <label
               htmlFor="colorInput"
@@ -355,7 +350,6 @@ const ProductModal = ({ isOpen, product, onClose, onSave, isEditing }) => {
             />
           </div>
 
-          {/* Size */}
           <div className="mb-4">
             <label
               htmlFor="sizeSelect"
@@ -381,7 +375,6 @@ const ProductModal = ({ isOpen, product, onClose, onSave, isEditing }) => {
             </select>
           </div>
 
-          {/* Price */}
           <div className="mb-4">
             <label
               htmlFor="priceInput"
@@ -409,7 +402,6 @@ const ProductModal = ({ isOpen, product, onClose, onSave, isEditing }) => {
             </div>
           </div>
 
-          {/* Image Upload */}
           <div className="mb-4">
             <label className="block text-gray-700 font-medium mb-2 text-sm sm:text-base">
               Product Image <span className="text-red-500">*</span>
@@ -625,27 +617,6 @@ const Products = () => {
     setEditIndex(null);
   }, []);
 
-  const viewProductDetails = (product) => {
-    const productForDetail = {
-      id: `local_${product.id}`,
-      title: product.name || product.brandname,
-      price: parseFloat(product.price),
-      description: product.collectionname || product.partnersname || product.name || '',
-      category: product.brandname || 'local',
-      image: product.image,
-      rating: product.rating || { rate: 4.0, count: 0 },
-      brandname: product.brandname,
-      collectionname: product.collectionname,
-      partnersname: product.partnersname,
-      color: product.color,
-      size: product.size,
-      name: product.name,
-      isLocalProduct: true,
-    };
-    
-    navigate("/product-detail", { state: productForDetail });
-  };
-
   const handleSubmit = useCallback(
     (formData) => {
       if (editIndex !== null) {
@@ -756,7 +727,6 @@ const Products = () => {
           }
         }
 
-        // String comparison for other fields
         if (a[sortConfig.key] < b[sortConfig.key]) {
           return sortConfig.direction === "ascending" ? -1 : 1;
         }
@@ -777,7 +747,6 @@ const Products = () => {
       </div>
 
       <div className="flex flex-col lg:flex-row gap-2 p-2 sm:p-3 lg:p-4">
-        {/* Mobile Sidebar Toggle Button */}
         <button
           onClick={toggleSidebar}
           className="lg:hidden bg-white p-3 sm:p-4 rounded-lg shadow-md mb-2 flex items-center gap-2 hover:bg-gray-50 transition-colors active:scale-95"
@@ -853,7 +822,6 @@ const Products = () => {
                   )}
                 </div>
 
-                {/* Add product button */}
                 <button
                   onClick={() => openModal()}
                   className="flex items-center justify-center gap-2 px-3 sm:px-4 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600 transition-colors w-full sm:w-auto text-sm sm:text-base"
@@ -893,7 +861,6 @@ const Products = () => {
                                 : ""
                             }`}
                           >
-                            {/* Action dropdown - responsive positioning */}
                             <div className="absolute top-1 right-1 sm:top-2 sm:right-2 z-10">
                               <button
                                 onClick={(e) =>
@@ -914,10 +881,8 @@ const Products = () => {
                               />
                             </div>
 
-                            {/* Product image - responsive heights */}
                             <div
                               className="h-32 xs:h-45 sm:h-40 md:h-48 overflow-hidden rounded-lg cursor-pointer"
-                              onClick={() => viewProductDetails(item)}
                             >
                               <img
                                 src={item.image || "/api/placeholder/250/192"}
@@ -926,19 +891,15 @@ const Products = () => {
                               />
                             </div>
 
-                            {/* Product details - responsive text sizes and spacing */}
                             <div className="flex flex-col gap-1.5 sm:gap-2 p-1 sm:p-2">
                               <div className="flex flex-col gap-1">
-                                {/* Brand name */}
                                 <span
                                   className="text-sm sm:text-base md:text-lg font-bold cursor-pointer hover:text-blue-600 transition-colors truncate"
                                   title={item.brandname}
-                                  onClick={() => viewProductDetails(item)}
                                 >
                                   {item.brandname || item.title}
                                 </span>
 
-                                {/* Product name */}
                                 <span
                                   className="text-xs sm:text-sm text-gray-700 truncate"
                                   title={item.name}
@@ -946,7 +907,6 @@ const Products = () => {
                                   {item.name}
                                 </span>
 
-                                {/* Collection and color - responsive truncation */}
                                 <p
                                   className="text-xs sm:text-sm text-gray-600 truncate"
                                   title={`${item.collectionname} ${
@@ -964,7 +924,6 @@ const Products = () => {
                                   {item.color}
                                 </p>
 
-                                {/* Star rating - responsive sizing */}
                                 <div className="flex gap-0.5 sm:gap-1 text-xs sm:text-sm my-1">
                                   {[...Array(4)].map((_, i) => (
                                     <i
@@ -975,16 +934,13 @@ const Products = () => {
                                   <i className="fa-regular fa-star text-orange-500"></i>
                                 </div>
 
-                                {/* Price - responsive text size */}
                                 <p className="text-base sm:text-lg md:text-xl font-semibold cursor-pointer hover:text-blue-600 transition-colors">
                                   ₹ {item.price}
                                 </p>
                               </div>
 
-                              {/* Action button - responsive sizing */}
                               <button
                                 className="hover:bg-green-700 bg-green-600 text-white py-1.5 sm:py-2 px-3 sm:px-4 rounded-md transition-colors font-medium text-sm sm:text-base mt-1 sm:mt-0"
-                                onClick={() => viewProductDetails(item)}
                               >
                                 View
                               </button>
@@ -993,7 +949,6 @@ const Products = () => {
                         );
                       })
                     ) : (
-                      // No products found - responsive layout
                       <div className="col-span-full text-center py-6 sm:py-8 text-gray-500 px-4">
                         <div className="mb-3 sm:mb-4">
                           <i className="fa-solid fa-search text-3xl sm:text-4xl text-gray-300"></i>
