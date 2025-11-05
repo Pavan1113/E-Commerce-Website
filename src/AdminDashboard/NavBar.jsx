@@ -1,11 +1,32 @@
 import React, { useEffect, useRef, useState } from "react";
 import { image } from "../images";
-import { NavLink, useNavigate } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 
 const NavBar = () => {
   const dropdownRef = useRef(null);
   const [isActive, setIsActive] = useState(false);
-  const name = JSON.parse(localStorage.getItem("logedInUser"));
+  const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+  const [userName, setUserName] = useState('');
+  
+  useEffect(() => {
+    try {
+      let user = localStorage.getItem("userAuth");
+      if (user) {
+        const parsedUser = JSON.parse(user);
+        setUserName(parsedUser.username || parsedUser.name || 'User');
+      } else {
+        user = localStorage.getItem("logedInUser");
+        if (user) {
+          const parsedUser = JSON.parse(user);
+          setUserName(parsedUser);
+        }
+      }
+    } catch (error) {
+      console.error("Error parsing user data:", error);
+      localStorage.removeItem("logedInUser");
+      localStorage.removeItem("userAuth");
+    }
+  }, []);
 
   useEffect(() => {
     const handleClickOutside = (event) => {
@@ -19,67 +40,76 @@ const NavBar = () => {
     };
   }, []);
 
-  const Navigate = useNavigate();
+  const navigate = useNavigate();
 
   function logoutHandler() {
-    localStorage.removeItem("logedInUser");
-    Navigate("/Login");
+    try {
+      localStorage.removeItem("userAuth");
+      localStorage.removeItem("logedInUser");
+      
+      setIsActive(false);
+      setIsMobileMenuOpen(false);
+      setUserName('');
+      navigate("/Login", { replace: true });
+      window.location.reload();
+    } catch (error) {
+      console.error("Error during logout:", error);
+      navigate("/Login", { replace: true });
+      window.location.reload();
+    }
   }
 
   return (
     <div>
       <div
-        className="flex flex-col gap-3"
+        className="flex flex-col"
         style={{ backgroundColor: "rgb(0 0 0 / 0.1)" }}
       >
-        <nav className=" flex items-center justify-between bg-black ">
-          <div className="flex items-center gap-4 px-3">
-            <img src={image.logo} height={"40px"} width={"40px"} alt="" />
-            <p className=" text-[26px] font-[700] text-[white]">E-Commerce</p>
+        <nav className="flex items-center justify-between bg-black px-3 py-2 md:py-0">
+          {/* Logo Section */}
+          <div className="flex items-center gap-2 md:gap-4">
+            <img 
+              src={image.logo} 
+              className="h-8 w-8 md:h-10 md:w-10" 
+              alt="Logo" 
+            />
+            <p className="text-lg md:text-[26px] font-[700] text-white">
+              E-Commerce
+            </p>
           </div>
-          <div style={{ position: "relative", display: "inline-block" }}>
+
+          {/* Desktop Search Bar */}
+          <div className="hidden md:block relative">
             <input
               type="text"
-              style={{
-                paddingRight: "36px",
-                paddingLeft: "8px",
-                height: "32px",
-                borderRadius: "4px",
-                outline:"0",
-              }}
+              className="pr-9 pl-3 h-8 rounded border-0 outline-0 w-64 lg:w-80"
               placeholder="Search"
             />
-            <div
-              className="bg-[#f3a847] flex items-center justify-center absolute p-[4px] rounded-[4px] h-[32px] w-[32px] "
-              style={{
-                top: "50%",
-                right: "0px",
-                transform: "translateY(-50%)",
-              }}
-            >
+            <div className="bg-[#f3a847] flex items-center justify-center absolute p-1 rounded h-8 w-8 top-1/2 right-0 transform -translate-y-1/2">
               <i className="fa-solid fa-magnifying-glass text-white text-sm"></i>
             </div>
           </div>
 
-          <div className="py-4 flex justify-end items-center gap-3 pr-4">
+          {/* Desktop User Section */}
+          <div className="hidden md:flex py-4 justify-end items-center gap-3">
             <img
               src={image.user}
-              style={{ height: "30px", width: "30px" }}
-              alt=""
+              className="h-7 w-7 md:h-8 md:w-8"
+              alt="User"
             />
             <div className="dropdown1" ref={dropdownRef}>
               <button
-                className="dropdown-button flex gap-2 items-center"
-                style={{ position: "relative" }}
+                className="dropdown-button flex gap-2 items-center relative"
                 onClick={() => setIsActive(!isActive)}
               >
-                <span style={{ fontSize: "20px", color: "white" }}>{name}</span>
+                <span className="text-base md:text-xl text-white">
+                  {userName || 'User'}
+                </span>
                 <img
                   src={image.downArrow}
                   alt="Dropdown"
+                  className="h-2.5 w-4"
                   style={{
-                    height: "10px",
-                    width: "15px",
                     transform: isActive ? "rotate(180deg)" : "none",
                     transition: "ease-in-out .3s",
                   }}
@@ -87,20 +117,69 @@ const NavBar = () => {
               </button>
               {isActive && (
                 <div
-                  className="border border-zinc-700 flex items-center p-2 bg-white text-black"
-                  onClick={logoutHandler}
+                  className="border border-zinc-700 flex items-center p-2 bg-white text-black absolute right-0 top-full mt-1 rounded shadow-lg z-50 min-w-max"
                   style={{
-                    position: "absolute",
-                    right: "1px",
                     transition: "ease-in-out .5s",
                   }}
                 >
-                  <NavLink>Logout</NavLink>
+                  <button
+                    onClick={logoutHandler}
+                    className="cursor-pointer hover:text-gray-600 w-full text-left px-2 py-1 hover:bg-gray-100 rounded transition-colors"
+                  >
+                    <i className="fa-solid fa-sign-out-alt mr-2"></i>
+                    Logout
+                  </button>
                 </div>
               )}
             </div>
           </div>
+
+          {/* Mobile Menu Button */}
+          <button
+            className="md:hidden text-white text-2xl"
+            onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
+            aria-label="Toggle mobile menu"
+          >
+            <i className={`fa-solid ${isMobileMenuOpen ? 'fa-times' : 'fa-bars'}`}></i>
+          </button>
         </nav>
+
+        {/* Mobile Menu */}
+        {isMobileMenuOpen && (
+          <div className="md:hidden bg-black border-t border-gray-700">
+            <div className="p-4 border-b border-gray-700">
+              <div className="relative">
+                <input
+                  type="text"
+                  className="w-full pr-10 pl-3 h-10 rounded border-0 outline-0"
+                  placeholder="Search"
+                />
+                <div className="bg-[#f3a847] flex items-center justify-center absolute p-2 rounded h-10 w-10 top-1/2 right-0 transform -translate-y-1/2">
+                  <i className="fa-solid fa-magnifying-glass text-white text-sm"></i>
+                </div>
+              </div>
+            </div>
+
+            {/* Mobile User Section */}
+            <div className="p-4">
+              <div className="flex items-center gap-3 mb-4">
+                <img
+                  src={image.user}
+                  className="h-8 w-8"
+                  alt="User"
+                />
+                <span className="text-white text-lg">{userName || 'User'}</span>
+              </div>
+              <button
+                onClick={logoutHandler}
+                className="w-full text-left py-3 px-4 bg-gray-800 text-white rounded hover:bg-gray-700 transition-colors"
+              >
+                <i className="fa-solid fa-sign-out-alt mr-2"></i>
+                Logout
+              </button>
+            </div>
+          </div>
+        )}
       </div>
     </div>
   );
