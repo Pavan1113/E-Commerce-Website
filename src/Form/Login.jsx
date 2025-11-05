@@ -103,6 +103,7 @@ const Login = () => {
         <div className="form">
           <div className="form-container">
             <p className="title">Login</p>
+            <span style={{fontSize:"12px",color:"grey",display:"flex",justifyContent:"center"}}>Welcome Back! please login to your account</span>
             <form className="form-input" onSubmit={handleSubmit}>
               <input
                 type="email"
